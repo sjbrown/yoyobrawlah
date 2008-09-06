@@ -7,9 +7,8 @@ Enhancing this to handle caching etc. is left as an exercise for the reader.
 
 import os
 
-#data_py = os.path.abspath(os.path.dirname(__file__))
-#data_dir = os.path.normpath(os.path.join(data_py, '..', 'data'))
-data_dir = 'data'
+data_py = os.path.abspath(os.path.dirname(__file__))
+data_dir = os.path.normpath(os.path.join(data_py, '..', 'data'))
 
 def filepath(filename):
     '''Determine the path to a file in the data directory.
