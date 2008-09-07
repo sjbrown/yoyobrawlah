@@ -8,6 +8,8 @@ Enhancing this to handle caching etc. is left as an exercise for the reader.
 from logging import info as log_info, debug as log_debug
 import pyglet
 import os
+import pickle
+from array import array
 
 data_py = os.path.abspath(os.path.dirname(__file__))
 data_dir = os.path.normpath(os.path.join(data_py, '..', 'data'))
@@ -59,12 +61,13 @@ class PngLoader(DynamicCachingLoader):
                         name += '.png'
                 try:
                         image = pyglet.image.load(name)
-                except pygame.error, message:
+                except Exception, ex:
                         log_debug( ' Cannot load image: '+ name )
-                        log_debug( 'Raising: '+ str(message) )
+                        log_debug( 'Raising: '+ str(ex) )
                         raise
 
                 self._d[resourceName] = image
+
 
 soundPlayer = None
 class OggLoader(DynamicCachingLoader):
@@ -88,7 +91,64 @@ class OggLoader(DynamicCachingLoader):
 
                 self._d[resourceName] = sound
 
+class TriggerLoader(DynamicCachingLoader):
+        def LoadResource(self, resourceName):
+                name = os.path.join( data_dir, resourceName )
+                if not name.endswith('.py'):
+                        name += '.py'
+                try:
+                    glbs = {}
+                    execfile(name, glbs)
+                except Exception, ex:
+                        log_debug( 'Cannot load triggers: '+ name )
+                        log_debug( 'Raising: '+ str(ex) )
+                        raise
+
+                self._d[resourceName] = glbs['triggers']
+
 oggs = OggLoader()
 pngs = PngLoader()
+levelTriggers = TriggerLoader()
+
+class BinaryMask(object):
+    def __init__(self, png):
+        format = 'R' #only care about the red
+        pitch = png.width * len(format)
+        self.width = png.width
+        pixeldata = png.get_data(format, pitch)
+        self.truthArray = array('b', [x == '\x00' for x in pixeldata])
+
+    def __getitem__(self, key):
+        x,y = key
+        #print 'returning ', self.pixeldata[ y*self.width + x ] == '\x00'
+        return self.truthArray[ y*self.width + x ]
+    
+
+class MaskLoader(DynamicCachingLoader):
+    def LoadResource(self, resourceName):
+        resourceName = str(resourceName)
+        png = pngs['levelmask'+resourceName+'.png']
+        pickleFname = 'levelmask'+resourceName+'.pkl'
+        pickleFname = os.path.join( data_dir, pickleFname )
+        mask = None
+        if os.path.exists(pickleFname):
+            fp = file(pickleFname, 'rb')
+            try:
+                mask = pickle.load(fp)
+            except Exception, ex:
+                log_info('Failed loading pickle')
+            finally:
+                fp.close()
+        if not mask:
+            mask = BinaryMask(png)
+            try:
+                fp = file(pickleFname, 'wb')
+                pickle.dump(mask, fp)
+                fp.close()
+            except Exception, ex:
+                log_info('Failed saving pickle')
+        self._d[resourceName] = mask
+
+levelMasks = MaskLoader()
 
 
