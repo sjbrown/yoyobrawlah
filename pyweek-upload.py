@@ -105,13 +105,15 @@ class progressHTTPConnection(httplib.HTTPConnection):
 
         p = Progress('Uploading', str)
         for chunk in p:
-            pos = 0
-            try:
-                pos += self.sock.send(chunk)
-            except socket.error, v:
-                if v[0] == 32:      # Broken pipe
-                    self.close()
-                raise
+            sent = 0
+            while sent != len(chunk):
+                try:
+                    sent += self.sock.send(chunk)
+                except socket.error, v:
+                    if v[0] == 32:      # Broken pipe
+                        self.close()
+                    raise
+                p.display()
 
 class progressHTTP(httplib.HTTP):
     _connection_class = progressHTTPConnection
@@ -171,7 +173,7 @@ if __name__ == '__main__':
         sys.exit(1)
     host = 'www.pyweek.org'
     port = 80
-    data = {}
+    data = dict(version=2)
     optional = {}
     url = None
     for opt, arg in optlist:
@@ -180,7 +182,7 @@ if __name__ == '__main__':
         elif opt == '-s': optional['is_screenshot'] = 'yes'
         elif opt == '-f': optional['is_final'] = 'yes'
         elif opt == '-d': data['description'] = arg
-        elif opt == '-c': data['content'] = Upload(arg)
+        elif opt == '-c': data['content_file'] = Upload(arg)
         elif opt == '-e': url = '/e/%s/oup/'%arg
         elif opt == '-h': host = arg
         elif opt == '-P': port = int(arg)
