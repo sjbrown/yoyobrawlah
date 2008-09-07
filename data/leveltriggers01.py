@@ -4,7 +4,7 @@
 triggers = {
 
 (240,660): 'start location',
-
+(366,570,75,210): 'enemyspawn',
 
 }
 
@@ -13,9 +13,10 @@ def rewriteToCartesian():
     IMG_HEIGHT = 1000
 
     newTriggers = {}
-    for key, val in triggers:
-        x,y = key
-        newTriggers[(x,IMG_HEIGHT-y)] = val
+    for key, val in triggers.items():
+        newKey = list(key)
+        newKey[1] = IMG_HEIGHT - newKey[1]
+        newTriggers[tuple(newKey)] = val
 
     triggers = newTriggers
 
