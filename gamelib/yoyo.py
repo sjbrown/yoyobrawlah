@@ -70,7 +70,7 @@ class YoYo(Sprite):
         if self.moveType == 'looping':
             self.loop(tick, False)
         elif self.moveType == 'shootthemoon':
-            self.shootTheMoon()
+            self.shootTheMoon(tick)
         elif self.moveType == 'walkthedog':
             self.walkTheDog(tick)
         elif self.moveType == 'windmill':
@@ -80,6 +80,8 @@ class YoYo(Sprite):
         if not self.yoyoReturn:
             stringLength = tick * 500
 
+            print "strlen = %f" % stringLength
+
             if self.facing == FACING_RIGHT:
                 dirAngle = -45
             else:
@@ -88,12 +90,15 @@ class YoYo(Sprite):
             x = math.cos(math.radians(dirAngle)) * abs(stringLength)
             y = math.sin(math.radians(dirAngle)) * abs(stringLength)
 
+            print "x=%f y=%f" % (x, y)
             opp = max(self.yoyoY, self.y) - min(self.yoyoY, self.y) + abs(y)
             adj = max(self.yoyoX, self.x) - min(self.yoyoX, self.x) + abs(x)
 
             totalLength = math.sqrt(opp * opp + adj * adj)
+            print "total = %f" % totalLength
             
             if totalLength > 60 and totalLength < self.stringMaxLength:
+                print "line"
                 point = (self.yoyoX, self.yoyoY, 0)
                 if point not in self.bends:
                     self.bends.append(point)
@@ -103,15 +108,18 @@ class YoYo(Sprite):
                     self.yoyoX -= stringLength
 
             elif totalLength < self.stringMaxLength:
+                print "angle"
                 self.yoyoX += x
                 self.yoyoY += y
+            else:
+                print "end of rope"
         else:
             self._yoyoReturn(tick)  
 
-    def shootTheMoon(self):
-        self.outAndBack(True)
+    def shootTheMoon(self, tick):
+        self.outAndBack(tick, True)
 
-    def outAndBack(self, shootTheMoon=False):
+    def outAndBack(self, tick, shootTheMoon=False):
         if not self.yoyoReturn:
             stringLength = math.cos(math.radians(self.angle)) * \
                            self.stringMaxLength

@@ -110,6 +110,7 @@ class Level(Scene):
 
             self.bg.blit(*window.bgOffset)
             avSprite.draw()
+            avSprite.yoyo.draw()
             for enemySprite in self.enemySprites.values():
                 enemySprite.draw()
             win.flip()
