@@ -3,6 +3,9 @@
 import pyglet
 import window
 import data
+import yoyo
+
+keysPressed = {}
 
 class AvatarSprite(pyglet.sprite.Sprite):
     def __init__(self, avatar):
@@ -10,37 +13,71 @@ class AvatarSprite(pyglet.sprite.Sprite):
         img = data.pngs['avatar.png']
         pyglet.sprite.Sprite.__init__(self, img, 0, 0)
 
+        self.yoyo = yoyo.YoYo()
+
         self.on_key_press = window.window.event(self.on_key_press)
         self.on_key_release = window.window.event(self.on_key_release)
 
     def update(self, timeChange=None):
         self.avatar.update(timeChange)
+
         self.x = self.avatar.x
         self.y = self.avatar.y
         self.x += window.bgOffset[0]
         self.y += window.bgOffset[1]
 
+        # set the yoyo positions
+        self.yoyo.x = self.x + 35
+        self.yoyo.y = self.y + 40
+        #self.yoyo.yoyoX += window.bgOffset[0]
+        #self.yoyo.yoyoY += window.bgOffset[1]
+        # XXX - hack to not screw the pooch
+        if not self.yoyo.moveType == 'walkthedog':
+            self.yoyo.yoyoX = self.x + 35
+            self.yoyo.yoyoY = self.y + 40
+
+        self.yoyo.facing = self.avatar.facing
+
+        self.yoyo.update(timeChange)
+
+
     def on_key_press(self, symbol, modifiers):
         from pyglet.window import key
-        dispatchDict = {
-            key.UP: self.avatar.On_UpKeyPress,
-            key.RIGHT: self.avatar.On_RightKeyPress,
-            key.DOWN: self.avatar.On_DownKeyPress,
-            key.LEFT: self.avatar.On_LeftKeyPress,
-            }
-        fn = dispatchDict.get(symbol)
-        if fn:
-            fn()
+        keysPressed[symbol] = True
+
+        if symbol == key.LCTRL:
+            if keysPressed.get(key.RIGHT) or keysPressed.get(key.LEFT):
+                self.yoyo.throw('looping')
+            elif keysPressed.get(key.DOWN):
+                self.yoyo.throw('walkthedog')
+            elif keysPressed.get(key.UP):
+                self.yoyo.throw('shootthemoon')
+        else:
+
+            moveDict = {
+                key.UP: self.avatar.On_UpKeyPress,
+                key.RIGHT: self.avatar.On_RightKeyPress,
+                key.DOWN: self.avatar.On_DownKeyPress,
+                key.LEFT: self.avatar.On_LeftKeyPress,
+                }
+            fn = moveDict.get(symbol)
+            if fn:
+                fn()
 
     def on_key_release(self, symbol, modifiers):
         from pyglet.window import key
-        dispatchDict = {
+        keysPressed[symbol] = False
+
+        if symbol == key.LCTRL:
+            self.yoyo.yoyoReturn = True
+
+        moveDict = {
             key.UP: self.avatar.On_UpKeyRelease,
             key.RIGHT: self.avatar.On_RightKeyRelease,
             key.DOWN: self.avatar.On_DownKeyRelease,
             key.LEFT: self.avatar.On_LeftKeyRelease,
             }
-        fn = dispatchDict.get(symbol)
+        fn = moveDict.get(symbol)
         if fn:
             fn()
 

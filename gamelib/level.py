@@ -70,6 +70,7 @@ class Level(Scene):
 
             self.bg.blit(*window.bgOffset)
             avSprite.draw()
+            avSprite.yoyo.draw()
             win.flip()
 
         return self.nextScene
