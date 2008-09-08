@@ -8,6 +8,7 @@ Contains the entry point used by the run_game.py script.
 import pyglet
 import window
 import level
+import events
 
 
 def main():

@@ -63,12 +63,13 @@ def ConsumeEventQueue():
 			try:
 				#get the method
 				listenerMethod = getattr( listener, methodName )
+			except AttributeError, ex:
+				pass
+			else:
 				#call that method
 				# the method can potentially add more
 				# items onto the eventQueue
 				listenerMethod( *args, **kwargs )
-			except AttributeError:
-				pass
 		i += 1
 	#all code paths that could possibly add more events to the eventQueue
 	# have been exhausted at this point, so it's safe to empty the queue
@@ -83,6 +84,7 @@ AvatarBirth
 AvatarDeath
 EnemyBirth
 EnemyDeath
+EnemyAquiredTarget
 AvatarAttack
 AvatarHurt
 EnemyAttack

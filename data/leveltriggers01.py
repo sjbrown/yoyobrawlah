@@ -4,7 +4,7 @@
 triggers = {
 
 (240,660): 'start location',
-(366,570,75,210): 'enemyspawn',
+(366,770,75,210): 'EnemySpawn',
 
 }
 
