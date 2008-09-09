@@ -36,9 +36,10 @@ class Enemy(Walker):
     def Hurt(self, amount):
         self.health -= amount
         if self.health > 0:
-            events.fire('EnemyHurt', self)
+            print 'enemy hurt!'
+            events.Fire('EnemyHurt', self)
         else:
-            events.fire('EnemyDeath', self)
+            events.Fire('EnemyDeath', self)
 
     def getDesiredLocation(self):
         if not self.knownAvatars:
@@ -50,6 +51,16 @@ class Enemy(Walker):
         else:
             desiredX = avPos[0] + 60
         return (desiredX, avPos[1])
+
+    def desireWithinReach(self):
+        desiredLoc = self.getDesiredLocation()
+        xdelta = desiredLoc[0] - self.feetPos[0]
+        ydelta = desiredLoc[1] - self.feetPos[1]
+        if (abs(xdelta) <= self.xFightingReach and
+            abs(ydelta) < self.yFightingReach):
+            return True
+        return False
+
 
     def showAvatar(self, avatar):
         self.knownAvatars.append(avatar)
@@ -72,7 +83,8 @@ class Enemy(Walker):
             victim.Hurt(power)
             print 'Enemy hit victim', timeChange
             events.Fire('AttackHit', self.attack, self, victim)
-        if self.attack.state == attStates.attacking and not victimsAndAmount:
+        if (self.attack.state == attStates.attacking and
+            not self.desireWithinReach()):
             self.attack.end()
         if self.attack.state == attStates.done:
             self.state = State.fastWalking
@@ -83,8 +95,7 @@ class Enemy(Walker):
         desiredLoc = self.getDesiredLocation()
         xdelta = desiredLoc[0] - self.feetPos[0]
         ydelta = desiredLoc[1] - self.feetPos[1]
-        if (abs(xdelta) <= self.xFightingReach and
-            abs(ydelta) < self.yFightingReach):
+        if self.desireWithinReach():
             print 'in position.  starting attack'
             self.state = State.startingAttack
             self.attack.start()

@@ -90,9 +90,12 @@ AvatarHurt
 EnemyAttack
 EnemyHurt
 AttackHit
+AvatarPickup
 AvatarHealthAdd
 AvatarHealthRemove
 AvatarEnergyAdd
 AvatarEnergyRemove
 PowerupConsume
+SpriteRemove
+TriggerZoneRemove
 '''.strip().split()

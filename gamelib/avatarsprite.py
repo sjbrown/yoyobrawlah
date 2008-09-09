@@ -61,10 +61,14 @@ class AvatarSprite(pyglet.sprite.Sprite):
         if symbol == key.LCTRL:
             if keysPressed.get(key.RIGHT) or keysPressed.get(key.LEFT):
                 self.yoyo.throw('looping')
+                self.avatar.setAttack('looping')
             elif keysPressed.get(key.DOWN):
                 self.yoyo.throw('walkthedog')
+                self.avatar.setAttack('walkthedog')
             elif keysPressed.get(key.UP):
                 self.yoyo.throw('shootthemoon')
+                self.avatar.setAttack('shootthemoon')
+            self.avatar.doAttack()
         else:
 
             moveDict = {

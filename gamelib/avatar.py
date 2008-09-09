@@ -55,13 +55,42 @@ class Avatar(Walker):
         self.yMax = 2
         self.yMin = -2
         self.stunCounter = 0
+        self.yoyo = None
+        self.attacks = {'looping':None,
+                        'walkthedog':None,
+                        'shootthemoon':None,
+                       }
+        self.selectedAttack = None
 
 
-    def Attack(self, attack):
-        center = self.rect.center
-        for victim, attackAmt in attack.GetVictimsAndAmount(self.center):
+    def pickupYoyo(self, yoyo):
+        self.yoyo = yoyo
+        if yoyo:
+            self.attacks = attacks.makeYoyoAttacks(yoyo)
+        events.Fire('AvatarPickup', self, yoyo)
+        
+    def setAttack(self, attackName):
+        newAttack = self.attacks.get(attackName)
+        if newAttack:
+            self.selectedAttack = newAttack
+
+    def getAttackables(self):
+        import level # avoid circular imports
+        return level.getActiveLevel().getAttackables()
+
+    def doAttack(self):
+        if not self.selectedAttack:
+            return
+        targets = self.getAttackables()
+        self.selectedAttack.wipe()
+        self.selectedAttack.instantAttack(self.feetPos, self.facing, targets)
+        victimsAndAmount = self.selectedAttack.GetVictimsAndAmount()
+        for victim, attackAmt in victimsAndAmount:
             power = attackAmt*self.energy
             victim.Hurt(power)
+            print 'Avatar hit victim', power
+            events.Fire('AttackHit', self.selectedAttack, self, victim)
+
 
     def On_UpKeyPress(self):
         self.yFacing = Facing.up
@@ -121,6 +150,7 @@ class Avatar(Walker):
         self.fireTriggers()
 
     def fireTriggers(self):
+        #Note : this is the exact object from the level, NOT A COPY
         if not self.triggerZones:
             print 'no trig zones!'
             return
@@ -137,6 +167,8 @@ class Avatar(Walker):
         self.stunCounter = 0
 
     def Hurt(self, amount):
+        # Note: Hurt is instantaneous, unlike On_AttackHit, which is called
+        # when the events module dispatches its events
         if amount <= 0:
             return #not actually hurt
         self.health -= amount
@@ -146,6 +178,14 @@ class Avatar(Walker):
             events.Fire('AvatarDeath', self)
 
     def On_AttackHit(self, attack, attacker, victim):
-        if victim == self:
-            if isinstance(attack, attacks.Hug):
-                self.stun()
+        if victim != self:
+            return
+        if self.state not in [State.normal]:
+            return
+
+        if isinstance(attack, attacks.Hug):
+            self.stun()
+
+class LogicalYoyo(object):
+    def __init__(self):
+        self.stringLength = 60
