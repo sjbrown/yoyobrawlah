@@ -89,6 +89,7 @@ AvatarAttack
 AvatarHurt
 EnemyAttack
 EnemyHurt
+AttackHit
 AvatarHealthAdd
 AvatarHealthRemove
 AvatarEnergyAdd

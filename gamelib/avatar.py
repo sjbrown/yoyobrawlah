@@ -3,10 +3,12 @@
 import pyglet
 import events
 from walker import Walker
+import attacks
 from util import clamp, outOfBounds, Facing, Rect
 
 class State:
     normal = 'normal'
+    stunned = 'stunned'
 
 def GetFriction(orig, absFriction):
     '''Return the friction.  Makes sure that the friction opposes the orig'''
@@ -36,6 +38,7 @@ class Avatar(Walker):
 
     def __init__(self):
         Walker.__init__(self)
+        events.AddListener(self)
         self.health = 10
         self.energy = 10
         self.state = State.normal
@@ -47,17 +50,12 @@ class Avatar(Walker):
         self.yFriction = 2
         self.xAccel = 1
         self.yAccel = 1 
-        self.xMax = 8
-        self.xMin = -8
-        self.yMax = 4
-        self.yMin = -4
+        self.xMax = 6
+        self.xMin = -6
+        self.yMax = 2
+        self.yMin = -2
+        self.stunCounter = 0
 
-    def Hurt(self, amount):
-        self.health -= amount
-        if self.health > 0:
-            events.fire('AvatarHurt', self)
-        else:
-            events.fire('AvatarDeath', self)
 
     def Attack(self, attack):
         center = self.rect.center
@@ -72,10 +70,8 @@ class Avatar(Walker):
         self.upPressed = False
     def On_RightKeyPress(self):
         self.facing = Facing.right
-        print 'right press'
         self.rightPressed = True
     def On_RightKeyRelease(self):
-        print 'right release'
         self.rightPressed = False
     def On_DownKeyPress(self):
         self.yFacing = Facing.down
@@ -89,6 +85,17 @@ class Avatar(Walker):
         self.leftPressed = False
             
     def update(self, timeChange=None):
+        if self.state == State.normal:
+            return self.update_walk(timeChange)
+        elif self.state == State.stunned:
+            return self.update_stunned(timeChange)
+
+    def update_stunned(self, timeChange):
+        self.stunCounter -= timeChange
+        if self.stunCounter <= 0:
+            self.unstun()
+
+    def update_walk(self, timeChange):
         oldRect = self.rect.move(0,0)
 
         isXWalking = self.leftPressed or self.rightPressed
@@ -120,3 +127,25 @@ class Avatar(Walker):
         for zone in self.triggerZones:
             if zone.rect.collidepoint(self.feetPos):
                 zone.fire(self)
+
+    def stun(self):
+        self.state = State.stunned
+        self.stunCounter = 0.5
+
+    def unstun(self):
+        self.state = State.normal
+        self.stunCounter = 0
+
+    def Hurt(self, amount):
+        if amount <= 0:
+            return #not actually hurt
+        self.health -= amount
+        if self.health > 0:
+            events.Fire('AvatarHurt', self)
+        else:
+            events.Fire('AvatarDeath', self)
+
+    def On_AttackHit(self, attack, attacker, victim):
+        if victim == self:
+            if isinstance(attack, attacks.Hug):
+                self.stun()
