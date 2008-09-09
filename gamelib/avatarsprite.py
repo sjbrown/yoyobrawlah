@@ -1,6 +1,7 @@
 #! /usr/bin/python
 
 import pyglet
+import events
 import window
 import data
 import yoyo
@@ -12,14 +13,23 @@ class AvatarSprite(pyglet.sprite.Sprite):
         self.avatar = avatar
         img = data.pngs['avatar.png']
         pyglet.sprite.Sprite.__init__(self, img, 0, 0)
+        events.AddListener(self)
+        self.blinkingCounter = 0.0
 
         self.yoyo = yoyo.YoYo()
 
         self.on_key_press = window.window.event(self.on_key_press)
         self.on_key_release = window.window.event(self.on_key_release)
 
+
     def update(self, timeChange=None):
         self.avatar.update(timeChange)
+
+        if self.blinkingCounter > 0:
+            self.opacity = (10 + self.opacity) % 255
+            self.blinkingCounter -= timeChange
+        elif not self.opacity == 255:
+            self.opacity = 255
 
         self.x = self.avatar.x
         self.y = self.avatar.y
@@ -40,6 +50,9 @@ class AvatarSprite(pyglet.sprite.Sprite):
 
         self.yoyo.update(timeChange)
 
+    def On_AttackHit(self, attack, attacker, victim):
+        if victim == self.avatar:
+            self.blinkingCounter = 1.0
 
     def on_key_press(self, symbol, modifiers):
         from pyglet.window import key

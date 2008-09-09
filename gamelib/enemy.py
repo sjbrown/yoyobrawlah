@@ -29,7 +29,7 @@ class Enemy(Walker):
         self.yMin = -2
         self.state = State.fastWalking
         self.knownAvatars = []
-        self.xFightingReach = 30
+        self.xFightingReach = 10
         self.yFightingReach = 4
         self.attack = attacks.Hug()
 
@@ -46,9 +46,9 @@ class Enemy(Walker):
         # go after the avatar
         avPos = self.knownAvatars[0].feetPos
         if avPos[0] > self.feetPos[0]:
-            desiredX = avPos[0] - 80
+            desiredX = avPos[0] - 60
         else:
-            desiredX = avPos[0] + 80
+            desiredX = avPos[0] + 60
         return (desiredX, avPos[1])
 
     def showAvatar(self, avatar):
@@ -81,14 +81,15 @@ class Enemy(Walker):
         oldRect = self.rect.move(0,0)
 
         desiredLoc = self.getDesiredLocation()
-        if desiredLoc == self.feetPos:
+        xdelta = desiredLoc[0] - self.feetPos[0]
+        ydelta = desiredLoc[1] - self.feetPos[1]
+        if (abs(xdelta) <= self.xFightingReach and
+            abs(ydelta) < self.yFightingReach):
             print 'in position.  starting attack'
             self.state = State.startingAttack
             self.attack.start()
             return
 
-        xdelta = desiredLoc[0] - self.feetPos[0]
-        ydelta = desiredLoc[1] - self.feetPos[1]
 
         hPower = 0
         vPower = 0
