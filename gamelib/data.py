@@ -7,6 +7,7 @@ Enhancing this to handle caching etc. is left as an exercise for the reader.
 
 from logging import info as log_info, debug as log_debug
 import pyglet
+from pyglet import font
 import os
 import pickle
 from array import array
@@ -25,7 +26,6 @@ def load(filename, mode='rb'):
     "mode" is passed as the second arg to open().
     '''
     return open(os.path.join(data_dir, filename), mode)
-
 
 # DynamicCachingLoader is an **ABSTRACT** class.  It must be inherited
 # from and the subclas MUST implement LoadResource( attname )
@@ -150,5 +150,29 @@ class MaskLoader(DynamicCachingLoader):
         self._d[resourceName] = mask
 
 levelMasks = MaskLoader()
+
+class FontLoader(DynamicCachingLoader):
+    def __init__(self):
+        DynamicCachingLoader.__init__(self)
+        font.add_directory(data_dir)
+
+    def LoadResource(self, resourceName):
+        if resourceName == 'ohcrud':
+            name = 'Oh Crud BB'
+        elif resourceName == 'schoolgirl':
+            name = 'CatholicSchoolGirls BB'
+        elif resourceName == 'default':
+            name = 'SmackAttack BB'
+        else:
+            name = resourceName
+        try:
+            myFont = font.load(name, 14, bold=True)
+        except Exception, ex:
+            log_info('Failed loading font')
+            myFont = font.load('Arial', 14, bold=True)
+        self._d[resourceName] = myFont
+
+fonts = FontLoader()
+
 
 

@@ -98,4 +98,7 @@ AvatarEnergyRemove
 PowerupConsume
 SpriteRemove
 TriggerZoneRemove
+StartSpeech
+SpeechPart
+StopSpeech
 '''.strip().split()

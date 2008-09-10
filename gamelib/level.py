@@ -7,16 +7,26 @@ import events
 
 from avatar import Avatar, LogicalYoyo
 from avatarsprite import AvatarSprite
-from enemy import Enemy
+from enemy import Enemy, TalkingEnemy
 from enemysprite import EnemySprite
+
+import visualeffects
+
+from scene import Scene, Cutscene
 
 _activeLevel = None
 def getActiveLevel():
     return _activeLevel
 
-class Scene(object):
-    def __init__(self):
-        self.done = False
+def getLevel(levelNum):
+    # some levels have special menthods and thus have named classes in here.
+    className = 'Level'+str(levelNum)
+    if className in globals():
+        # ie, Level2(2)
+        return globals()[className](levelNum)
+    else:
+        # just a generic level.  no special methods
+        return Level(levelNum)
 
 class TriggerZone(object):
     def __init__(self, rectTuple, level):
@@ -26,14 +36,34 @@ class TriggerZone(object):
     def fire(self, firer):
         print 'firing triggerzone'
 
+class GoalZone(TriggerZone):
+    def fire(self, firer):
+        if self.fired:
+            return
+
+        self.fired = True
+        events.Fire('LevelCompletedEvent', getActiveLevel())
+
 class EnemySpawn(TriggerZone):
     def fire(self, firer):
         if self.fired:
             return
 
         self.fired = True
-        enemy = Enemy()
+        enemy = TalkingEnemy()
         enemy.feetPos = self.level.startLoc
+        enemy.walkMask = self.level.walkMask
+        enemy.showAvatar(firer)
+        events.Fire('EnemyBirth', enemy)
+
+class EnemySpawn2(EnemySpawn):
+    def fire(self, firer):
+        if self.fired:
+            return
+
+        self.fired = True
+        enemy = TalkingEnemy()
+        enemy.feetPos = (1040, 440)
         enemy.walkMask = self.level.walkMask
         enemy.showAvatar(firer)
         events.Fire('EnemyBirth', enemy)
@@ -84,16 +114,23 @@ class Level(Scene):
     def __init__(self, levelNum):
         events.AddListener(self)
         self.done = False
-        self.levelNum = '%02d' % levelNum
-        self.bg = data.pngs['levelbg'+self.levelNum+'.png']
-        self.walkMask = data.levelMasks[self.levelNum]
-        triggers = data.levelTriggers['leveltriggers'+self.levelNum]
+        self.levelNum = levelNum
+        strLevelNum = '%02d' % levelNum
+        self.bg = data.pngs['levelbg'+strLevelNum+'.png']
+        self.walkMask = data.levelMasks[strLevelNum]
+        self.visualEffects = visualeffects.EffectManager()
+        triggers = data.levelTriggers['leveltriggers'+strLevelNum]
+
+        if self.levelNum == 1:
+            self.avatar = Avatar()
 
         self.miscSprites = []
         self.triggerZones = []
         for rect, clsName in triggers.items():
             cls = globals().get(clsName)
             if not cls:
+                if len(rect) == 4:
+                    print "ERROR: couldn't find", clsName
                 continue
             zone = cls(rect, self)
             self.triggerZones.append(zone)
@@ -105,10 +142,16 @@ class Level(Scene):
         self.startLoc = [key for key,val in triggers.items()
                         if val == 'start location'][0]
 
-        self.nextScene = None
+    def getNextScene(self):
+        print 'getting next scene for ', self.levelNum
+        nextScene = getLevel(self.levelNum+1)
+        nextScene.avatar = self.avatar
+        return nextScene
 
     def end(self):
+        events.RemoveListener(self)
         self.done = True
+        self.avatar.triggerZones = []
 
     def getAttackables(self):
         # TODO: might wanna be more sophisticated, including barrels and such.
@@ -134,17 +177,15 @@ class Level(Scene):
         clock.set_fps_limit(60)
         win = window.window
 
-        avatar = Avatar()
-        avSprite = AvatarSprite(avatar)
-        avatar.feetPos = self.startLoc
-        avatar.walkMask = self.walkMask
-        print 'setting trig zones', self.triggerZones
-        avatar.triggerZones = self.triggerZones
+        avSprite = AvatarSprite(self.avatar)
+        self.avatar.feetPos = self.startLoc
+        self.avatar.walkMask = self.walkMask
+        self.avatar.triggerZones = self.triggerZones
 
-        events.Fire('AvatarBirth', avatar)
+        events.Fire('AvatarBirth', self.avatar)
         events.Fire('LevelStartedEvent', self)
         
-        while True:
+        while not self.done:
             timeChange = clock.tick()
 
             events.ConsumeEventQueue()
@@ -154,12 +195,14 @@ class Level(Scene):
                 miscSprite.update(timeChange)
             for enemySprite in self.enemySprites.values():
                 enemySprite.update(timeChange)
+            for sprite in self.visualEffects.sprites:
+                sprite.update(timeChange)
 
             win.clear()
             if self.done or win.has_exit:
                 break
 
-            offset = self.calcBGOffset(avatar.x, avatar.y,
+            offset = self.calcBGOffset(self.avatar.x, self.avatar.y,
                                        win.width, win.height,
                                        self.bg.width, self.bg.height)
             window.bgOffset[0] = offset[0]
@@ -172,10 +215,15 @@ class Level(Scene):
             avSprite.yoyo.draw()
             for enemySprite in self.enemySprites.values():
                 enemySprite.draw()
+            for sprite in self.visualEffects.sprites:
+                sprite.draw()
             win.flip()
 
-        events.Fire('LevelCompletedEvent', self)
-        return self.nextScene
+        return self.getNextScene()
+
+    def On_LevelCompletedEvent(self, level):
+        # just assume it's me.
+        self.end()
 
     def On_EnemyBirth(self, enemy):
         print 'handling enemy birth'
@@ -193,3 +241,9 @@ class Level(Scene):
         if sprite in self.miscSprites:
             self.miscSprites.remove(sprite)
 
+class Level2(Level):
+    def getNextScene(self):
+        scene = Cutscene(1)
+        scene.avatar = self.avatar
+        scene.nextLevelNum = 3
+        return scene

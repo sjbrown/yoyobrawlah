@@ -8,6 +8,7 @@ import attacks
 
 class State:
     idle = 'idle'
+    talking = 'talking'
     fastWalking = 'fast walking'
     slowWalking = 'slow walking'
     startingAttack = attacks.State.startingAttack
@@ -21,7 +22,7 @@ class State:
 class Enemy(Walker):
     def __init__(self):
         Walker.__init__(self)
-        self.health = 1
+        self.health = 10
         self.energy = 1
         self.xMax = 4
         self.xMin = -4
@@ -39,6 +40,7 @@ class Enemy(Walker):
             print 'enemy hurt!'
             events.Fire('EnemyHurt', self)
         else:
+            print 'enemy death!'
             events.Fire('EnemyDeath', self)
 
     def getDesiredLocation(self):
@@ -182,3 +184,41 @@ class WackyEnemy(Enemy):
         newRect = self.walkTo(oldRect, hPower, vPower)
 
         self.rect = newRect
+
+class TalkingEnemy(Enemy):
+    def __init__(self):
+        Enemy.__init__(self)
+        self.state = State.talking
+        self.speech = [(2, 'OH HAI'),
+                       (3, 'CAN IT BE HUGZ TEIM NOW?'),
+                      ]
+        self.speechCounter = 0.0
+        self.speechIter = None
+        self.currentPart = None
+
+    def update(self, timeChange=None):
+        if self.state in State.attackingStates:
+            return self.update_attack(timeChange)
+        elif self.state in State.walkingStates:
+            return self.update_walk(timeChange)
+        elif self.state == State.talking:
+            return self.update_talk(timeChange)
+
+    def update_talk(self, timeChange):
+        if self.currentPart == None:
+            events.Fire('StartSpeech', self)
+            self.speechIter = iter(self.speech)
+            self.currentPart = self.speechIter.next()
+            events.Fire('SpeechPart', self, self.currentPart[1])
+            return
+
+        self.speechCounter += timeChange
+        if self.speechCounter > self.currentPart[0]:
+            self.speechCounter = 0.0
+            try:
+                self.currentPart = self.speechIter.next()
+                events.Fire('SpeechPart', self, self.currentPart[1])
+            except StopIteration:
+                events.Fire('StopSpeech', self)
+                self.state = State.fastWalking
+                

@@ -7,10 +7,10 @@
 triggers = {
 
 (200,660): 'start location',
-(366,770,75,210): 'EnemySpawn',
-(505,660,20,20): 'YoyoPickup',
-(1810,690,120,130): 'GoalZone',
-(890,760,170,270): 'EnemySpawn2',
+#(366,770,75,210): 'EnemySpawn',
+#(510,655,20,20): 'YoyoPickup',
+(1650,380,220,110): 'GoalZone',
+(1920,360,120,90): 'GoalZone',
 
 }
 

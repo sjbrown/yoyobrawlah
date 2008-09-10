@@ -40,7 +40,7 @@ class Avatar(Walker):
         Walker.__init__(self)
         events.AddListener(self)
         self.health = 10
-        self.energy = 10
+        self.energy = 3
         self.state = State.normal
         self.upPressed = False
         self.rightPressed = False
@@ -188,4 +188,4 @@ class Avatar(Walker):
 
 class LogicalYoyo(object):
     def __init__(self):
-        self.stringLength = 60
+        self.stringLength = 120
