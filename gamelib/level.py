@@ -11,7 +11,6 @@ from avatar import Avatar, LogicalYoyo
 from avatarsprite import AvatarSprite
 from enemy import Enemy, TalkingEnemy
 from enemysprite import EnemySprite
-from dialog import Dialog
 
 from pyglet.gl import *
 
