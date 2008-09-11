@@ -81,6 +81,7 @@ class AvatarSprite(pyglet.sprite.Sprite):
                 self.avatar.setAttack('shootthemoon')
             else:
                 self.yoyo.throw('looping')
+                self.avatar.setAttack('looping')
             self.avatar.doAttack()
         else:
             moveDict = {
