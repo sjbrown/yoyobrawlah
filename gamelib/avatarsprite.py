@@ -5,6 +5,10 @@ import window
 import data
 import yoyo
 
+import euclid
+import effects
+from random import randint
+
 keysPressed = {}
 
 class AvatarSprite(pyglet.sprite.Sprite):
@@ -12,6 +16,13 @@ class AvatarSprite(pyglet.sprite.Sprite):
         self.avatar = avatar
         img = data.pngs['avatar.png']
         pyglet.sprite.Sprite.__init__(self, img, 0, 0)
+
+        self.blood = []
+
+        direction = effects.Blood.right
+        for drop in range(0, randint(15, 20)):
+            self.blood.append(effects.Blood(euclid.Vector2(200, 200), direction +
+                               euclid.Vector2(randint(-2, 2), randint(-2, 2))))
 
         self.yoyo = yoyo.YoYo()
 
@@ -23,37 +34,42 @@ class AvatarSprite(pyglet.sprite.Sprite):
 
         self.x = self.avatar.x
         self.y = self.avatar.y
+
+        deltaX = self.x - self.yoyo.x + 35
+        deltaY = self.y - self.yoyo.y + 40
+
+        self.yoyo.x = self.x + 35
+        self.yoyo.y = self.y + 40
+        self.yoyo.yoyoX += deltaX
+        self.yoyo.yoyoY += deltaY
+
         self.x += window.bgOffset[0]
         self.y += window.bgOffset[1]
 
-        # set the yoyo positions
-        self.yoyo.x = self.x + 35
-        self.yoyo.y = self.y + 40
-        #self.yoyo.yoyoX += window.bgOffset[0]
-        #self.yoyo.yoyoY += window.bgOffset[1]
-        # XXX - hack to not screw the pooch
-        if not self.yoyo.moveType == 'walkthedog':
-            self.yoyo.yoyoX = self.x + 35
-            self.yoyo.yoyoY = self.y + 40
+        self.yoyo.offsetX = window.bgOffset[0]
+        self.yoyo.offsetY = window.bgOffset[1]
 
         self.yoyo.facing = self.avatar.facing
 
         self.yoyo.update(timeChange)
+
+        for drop in self.blood:
+            drop.update(timeChange)
 
 
     def on_key_press(self, symbol, modifiers):
         from pyglet.window import key
         keysPressed[symbol] = True
 
-        if symbol == key.LCTRL:
-            if keysPressed.get(key.RIGHT) or keysPressed.get(key.LEFT):
-                self.yoyo.throw('looping')
-            elif keysPressed.get(key.DOWN):
+        if keysPressed.get(key.LCTRL):
+        #if symbol == key.LCTRL:
+            if keysPressed.get(key.DOWN):
                 self.yoyo.throw('walkthedog')
             elif keysPressed.get(key.UP):
                 self.yoyo.throw('shootthemoon')
+            else:
+                self.yoyo.throw('looping')
         else:
-
             moveDict = {
                 key.UP: self.avatar.On_UpKeyPress,
                 key.RIGHT: self.avatar.On_RightKeyPress,
