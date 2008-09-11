@@ -1,5 +1,7 @@
 import pyglet
 from pyglet import clock
+from pyglet import font
+
 from util import clamp, Rect
 import window
 import data
@@ -9,6 +11,9 @@ from avatar import Avatar, LogicalYoyo
 from avatarsprite import AvatarSprite
 from enemy import Enemy, TalkingEnemy
 from enemysprite import EnemySprite
+from dialog import Dialog
+
+from pyglet.gl import *
 
 import visualeffects
 
@@ -110,6 +115,26 @@ class YoyoPickup(TriggerZone):
         firer.pickupYoyo(yoyo)
         events.Fire('TriggerZoneRemove', self)
 
+class Heart(pyglet.sprite.Sprite):
+    def __init__(self):
+        imageFile = data.pngs['small-heart.png']
+        pyglet.sprite.Sprite.__init__(self, imageFile, 0, 0)
+
+class HeartMeter:
+    def __init__(self):
+        self.hearts = []
+        self.hearts.append(Heart())
+        self.hearts.append(Heart())
+
+    def update(self, tick):
+        pass
+
+    def draw(self):
+        for count, heart in enumerate(self.hearts):
+            heart.x = count * 41 + 115
+            heart.y = 0
+            heart.draw()
+
 class Level(Scene):
     def __init__(self, levelNum):
         events.AddListener(self)
@@ -125,6 +150,12 @@ class Level(Scene):
             self.avatar = Avatar()
 
         self.miscSprites = []
+        healthFont = font.load('Oh Crud BB', 28)
+        self.healthText = font.Text(healthFont, x=10, y=25, text='Health:')
+        self.healthBar = HeartMeter()
+
+        self.fpsText = font.Text(healthFont, x=650, y=25)
+
         self.triggerZones = []
         for rect, clsName in triggers.items():
             cls = globals().get(clsName)
@@ -213,10 +244,18 @@ class Level(Scene):
                 miscSprite.draw()
             avSprite.draw()
             avSprite.yoyo.draw()
+
             for enemySprite in self.enemySprites.values():
                 enemySprite.draw()
             for sprite in self.visualEffects.sprites:
                 sprite.draw()
+
+            self.healthText.draw()
+            self.healthBar.draw()
+
+            self.fpsText.text = "fps: %d" % clock.get_fps()
+            self.fpsText.draw()
+
             win.flip()
 
         return self.getNextScene()
@@ -247,3 +286,25 @@ class Level2(Level):
         scene.avatar = self.avatar
         scene.nextLevelNum = 3
         return scene
+
+def renderTriangle():
+    glPushAttrib(GL_ENABLE_BIT)
+
+    # resets the state machine to 0, 0 (the identity matrix)
+    glLoadIdentity()
+
+    # moves the state machine to 200, 200
+    glTranslatef(200, 200, 0)
+    glColor3ub(255, 0, 0)
+
+    # draws the triangle in the relative position
+    glBegin(GL_TRIANGLES)
+    glVertex3f(100.0, -100.0, 0.0)
+    glVertex3f(-100.0, -100.0, 0.0)
+    glVertex3f(0.0, 100.0, 0.0)
+    glEnd()
+
+    glColor3ub(255, 255, 255)
+    glLoadIdentity()
+
+    glPopAttrib()

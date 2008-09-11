@@ -7,23 +7,7 @@ from pyglet.window.key import *
 FACING_RIGHT = 1
 FACING_LEFT = -1
 
-class Sprite:
-    def __init__(self, fileName='svgs/ship.svg'):
-        #self.sprite = \
-        #    squirtle.SVG(fileName, anchor_x='center', anchor_y='center')
-        self.angle = 0
-        self.rotation = 0
-
-    def update(self, tick):
-        pass
-
-    def collidePoint(self, x, y):
-        pass
-
-    def draw(self):
-        self.sprite.draw(self.position.x, self.position.y, angle=self.angle)
-
-class YoYo(Sprite):
+class YoYo:
     def __init__(self, moveType=''):
         self.quad = gluNewQuadric()
         self.x = 300
@@ -31,6 +15,9 @@ class YoYo(Sprite):
 
         self.yoyoX = self.x 
         self.yoyoY = self.y
+
+        self.offsetX = 0
+        self.offsetY = 0
 
         self.moveType = moveType
         self.time = 0
@@ -45,6 +32,9 @@ class YoYo(Sprite):
         self.angle = 0
 
     def throw(self, moveType):
+        #if self.moveType:
+        #    return
+
         self.yoyoX = self.x
         self.yoyoY = self.y
 
@@ -148,6 +138,9 @@ class YoYo(Sprite):
     def loop(self, tick, windmill=True):
         stringLengthY = 40
 
+        if self.facing == FACING_LEFT and self.angle > 450:
+            self.yoyoReturn = True
+
         if not self.yoyoReturn:
 
             if windmill:
@@ -183,10 +176,17 @@ class YoYo(Sprite):
 
         opp = self.yoyoX - self.x
         adj = self.yoyoY - self.y
+
+        print "x1=%f x2=%f y1=%f y2=%f" % (self.x, self.yoyoX, self.y, self.yoyoY)
+
         rad = math.atan2(opp, adj)
 
-        mov_x = 750 * math.sin(rad) * tick
-        mov_y = 750 * math.cos(rad) * tick
+        print "rad = %f" % (rad)
+
+        mov_x = 550 * math.sin(rad) * tick
+        mov_y = 550 * math.cos(rad) * tick
+
+        print "x = %f, y = %f" % (mov_x, mov_y)
 
         if abs(self.x - self.yoyoX) < 6 and \
            abs(self.y - self.yoyoY) < 6:
@@ -203,11 +203,12 @@ class YoYo(Sprite):
     def _drawString(self):
         # draw the string
         glBegin(GL_LINES)
-        glVertex3f(self.x, self.y, 0)
-        for bend in self.bends:
-            glVertex3f(*bend)
-            glVertex3f(*bend)
-        glVertex3f(self.yoyoX, self.yoyoY, 0)
+        glVertex3f(self.x + self.offsetX, self.y + self.offsetY, 0)
+        for count, bend in enumerate(self.bends):
+            offsetBend = (bend[0] + self.offsetX, bend[1] + self.offsetY, 0)
+            glVertex3f(*offsetBend)
+            glVertex3f(*offsetBend)
+        glVertex3f(self.yoyoX + self.offsetX, self.yoyoY + self.offsetY, 0)
         glEnd()
 
     def draw(self):
@@ -221,7 +222,9 @@ class YoYo(Sprite):
 
         glLoadIdentity()
 
-        glTranslatef(self.yoyoX, self.yoyoY, 0)
+        xPos = self.yoyoX + self.offsetX
+        yPos = self.yoyoY + self.offsetY
+        glTranslatef(xPos, yPos, 0)
 
         gluDisk(self.quad, 0, 7, 50, 1)
         glColor4f(1.0, 1.0, 1.0, 1.0)
