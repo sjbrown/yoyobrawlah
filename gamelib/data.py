@@ -14,6 +14,8 @@ from array import array
 
 data_py = os.path.abspath(os.path.dirname(__file__))
 data_dir = os.path.normpath(os.path.join(data_py, '..', 'data'))
+pyglet.resource.path.append(data_dir)
+pyglet.resource.reindex()
 
 def filepath(filename):
     '''Determine the path to a file in the data directory.
@@ -56,6 +58,7 @@ class DynamicCachingLoader(dict):
 
 class PngLoader(DynamicCachingLoader):
         def LoadResource(self, resourceName):
+                print pyglet.resource.path
                 name = os.path.join( data_dir, resourceName )
                 if not name.endswith('.png'):
                         name += '.png'

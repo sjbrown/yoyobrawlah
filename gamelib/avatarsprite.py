@@ -10,28 +10,32 @@ import euclid
 import effects
 from random import randint
 
+from animation import Anim
+from util import ShadowSprite
+
 keysPressed = {}
 
 class AvatarSprite(pyglet.sprite.Sprite):
     def __init__(self, avatar):
         self.avatar = avatar
-        img = data.pngs['avatar.png']
-        pyglet.sprite.Sprite.__init__(self, img, 0, 0)
+        self.currentAnim = Anim('subWalkSquash', 5)
+        #img = data.pngs['avatar.png']
+        pyglet.sprite.Sprite.__init__(self, self.currentAnim.animation, 0, 0)
         events.AddListener(self)
         self.blinkingCounter = 0.0
 
-        self.blood = []
-
-        direction = effects.Blood.right
-        for drop in range(0, randint(15, 20)):
-            self.blood.append(effects.Blood(euclid.Vector2(200, 200), direction +
-                               euclid.Vector2(randint(-2, 2), randint(-2, 2))))
-
         self.yoyo = yoyo.YoYo()
+        self.shadow = ShadowSprite()
+        self.shadow.scale = float(self.width)/self.shadow.width
+        self.shadow.opacity = 128
 
         self.on_key_press = window.window.event(self.on_key_press)
         self.on_key_release = window.window.event(self.on_key_release)
 
+
+    def draw(self):
+        self.shadow.draw()
+        pyglet.sprite.Sprite.draw(self)
 
     def update(self, timeChange=None):
         self.avatar.update(timeChange)
@@ -63,6 +67,9 @@ class AvatarSprite(pyglet.sprite.Sprite):
 
         self.yoyo.update(timeChange)
 
+        self.shadow.x = self.x
+        self.shadow.y = self.y - (self.shadow.height/2) #shadow center = feetpos
+
     def On_AttackHit(self, attack, attacker, victim):
         if victim == self.avatar:
             self.blinkingCounter = 1.0
@@ -92,13 +99,18 @@ class AvatarSprite(pyglet.sprite.Sprite):
                 }
             fn = moveDict.get(symbol)
             if fn:
+                oldFacing = self.avatar.facing
                 fn()
+                print 'old', oldFacing, 'new', self.avatar.facing
+                if self.avatar.facing != oldFacing:
+                    self.currentAnim.flip()
+
 
     def on_key_release(self, symbol, modifiers):
         from pyglet.window import key
         keysPressed[symbol] = False
 
-        if symbol == key.LCTRL:
+        if symbol == key.LCTRL and self.yoyo.moveType:
             self.yoyo.yoyoReturn = True
 
         moveDict = {

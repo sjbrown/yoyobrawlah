@@ -32,8 +32,9 @@ class YoYo:
         self.angle = 0
 
     def throw(self, moveType):
-        #if self.moveType:
-        #    return
+        if self.moveType or self.yoyoReturn:
+            #print 'mt=%s yyr=%s' % (self.moveType, str(self.yoyoReturn))
+            return
 
         self.yoyoX = self.x
         self.yoyoY = self.y
@@ -70,7 +71,7 @@ class YoYo:
         if not self.yoyoReturn:
             stringLength = tick * 500
 
-            print "strlen = %f" % stringLength
+            #print "strlen = %f" % stringLength
 
             if self.facing == FACING_RIGHT:
                 dirAngle = -45
@@ -80,15 +81,15 @@ class YoYo:
             x = math.cos(math.radians(dirAngle)) * abs(stringLength)
             y = math.sin(math.radians(dirAngle)) * abs(stringLength)
 
-            print "x=%f y=%f" % (x, y)
+            #print "x=%f y=%f" % (x, y)
             opp = max(self.yoyoY, self.y) - min(self.yoyoY, self.y) + abs(y)
             adj = max(self.yoyoX, self.x) - min(self.yoyoX, self.x) + abs(x)
 
             totalLength = math.sqrt(opp * opp + adj * adj)
-            print "total = %f" % totalLength
+            #print "total = %f" % totalLength
             
             if totalLength > 60 and totalLength < self.stringMaxLength:
-                print "line"
+                #print "line"
                 point = (self.yoyoX, self.yoyoY, 0)
                 if point not in self.bends:
                     self.bends.append(point)
@@ -98,7 +99,7 @@ class YoYo:
                     self.yoyoX -= stringLength
 
             elif totalLength < self.stringMaxLength:
-                print "angle"
+                #print "angle"
                 self.yoyoX += x
                 self.yoyoY += y
             else:
@@ -110,6 +111,10 @@ class YoYo:
         self.outAndBack(tick, True)
 
     def outAndBack(self, tick, shootTheMoon=False):
+        if self.facing == FACING_LEFT and self.angle > 465 or \
+           self.facing == FACING_RIGHT and self.angle > 645:
+            self.yoyoReturn = True
+            
         if not self.yoyoReturn:
             stringLength = math.cos(math.radians(self.angle)) * \
                            self.stringMaxLength
@@ -138,8 +143,10 @@ class YoYo:
     def loop(self, tick, windmill=True):
         stringLengthY = 40
 
-        if self.facing == FACING_LEFT and self.angle > 450:
+        if self.facing == FACING_LEFT and self.angle > 465 or \
+           self.facing == FACING_RIGHT and self.angle > 645:
             self.yoyoReturn = True
+            
 
         if not self.yoyoReturn:
 
@@ -177,19 +184,14 @@ class YoYo:
         opp = self.yoyoX - self.x
         adj = self.yoyoY - self.y
 
-        print "x1=%f x2=%f y1=%f y2=%f" % (self.x, self.yoyoX, self.y, self.yoyoY)
-
         rad = math.atan2(opp, adj)
-
-        print "rad = %f" % (rad)
 
         mov_x = 550 * math.sin(rad) * tick
         mov_y = 550 * math.cos(rad) * tick
 
-        print "x = %f, y = %f" % (mov_x, mov_y)
-
         if abs(self.x - self.yoyoX) < 6 and \
            abs(self.y - self.yoyoY) < 6:
+            #print "finished throw"
             self.yoyoX = self.x
             self.yoyoY = self.y
             self.yoyoReturn = False

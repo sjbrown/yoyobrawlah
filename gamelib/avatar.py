@@ -40,7 +40,8 @@ class Avatar(Walker):
         Walker.__init__(self)
         events.AddListener(self)
         self.health = 10
-        self.energy = 3
+        self.energy = 1
+        self.maxEnergy = 5
         self.state = State.normal
         self.upPressed = False
         self.rightPressed = False
@@ -63,6 +64,8 @@ class Avatar(Walker):
         self.selectedAttack = None
 
 
+    def pickupString(self):
+        self.energy += 1
     def pickupYoyo(self, yoyo):
         self.yoyo = yoyo
         if yoyo:
@@ -79,9 +82,12 @@ class Avatar(Walker):
         return level.getActiveLevel().getAttackables()
 
     def doAttack(self):
+        print 'self doing attack'
         if not self.selectedAttack:
+            print 'fail no attack slected'
             return
         targets = self.getAttackables()
+        print 'really attacking', self.selectedAttack
         self.selectedAttack.wipe()
         self.selectedAttack.instantAttack(self.feetPos, self.facing, targets)
         victimsAndAmount = self.selectedAttack.GetVictimsAndAmount()
@@ -120,8 +126,8 @@ class Avatar(Walker):
             return self.update_stunned(timeChange)
 
     def update_stunned(self, timeChange):
-        self.stunCounter -= timeChange
-        if self.stunCounter <= 0:
+        self.stunCounter += timeChange
+        if self.stunCounter >= 0.3:
             self.unstun()
 
     def update_walk(self, timeChange):
