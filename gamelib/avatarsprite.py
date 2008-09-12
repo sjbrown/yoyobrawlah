@@ -98,7 +98,7 @@ class AvatarSprite(pyglet.sprite.Sprite):
         from pyglet.window import key
         keysPressed[symbol] = False
 
-        if symbol == key.LCTRL:
+        if symbol == key.LCTRL and self.yoyo.moveType:
             self.yoyo.yoyoReturn = True
 
         moveDict = {

@@ -6,6 +6,8 @@ from util import clamp, Rect
 import window
 import data
 import events
+import glob
+import os.path
 
 from avatar import Avatar, LogicalYoyo
 from avatarsprite import AvatarSprite
@@ -140,7 +142,11 @@ class Level(Scene):
         self.done = False
         self.levelNum = levelNum
         strLevelNum = '%02d' % levelNum
-        self.bg = data.pngs['levelbg'+strLevelNum+'.png']
+        #self.bg = data.pngs['levelbg'+strLevelNum+'.png']
+
+        filePath= os.path.join(data.data_dir, 'levelbg%02d-?.png' % levelNum)
+        self.bgImages = [data.pngs[png] for png in glob.glob(filePath)]
+
         self.walkMask = data.levelMasks[strLevelNum]
         self.visualEffects = visualeffects.EffectManager()
         triggers = data.levelTriggers['leveltriggers'+strLevelNum]
@@ -232,13 +238,28 @@ class Level(Scene):
             if self.done or win.has_exit:
                 break
 
+            # find the combined height of the background images
+
+            bgWidth = 0
+            bgHeight = 0
+
+            for bg in self.bgImages:
+                bgWidth += bg.width
+                bgHeight += bg.height
+
             offset = self.calcBGOffset(self.avatar.x, self.avatar.y,
                                        win.width, win.height,
-                                       self.bg.width, self.bg.height)
+                                       bgWidth, bgHeight)
+
             window.bgOffset[0] = offset[0]
             window.bgOffset[1] = offset[1]
 
-            self.bg.blit(*window.bgOffset)
+            #self.bg.blit(*window.bgOffset)
+            #[bg.blit(*window.bgOffset) for bg in self.bgImages]
+
+            for count, bg in enumerate(self.bgImages):
+                bg.blit(count * 1024 + window.bgOffset[0], window.bgOffset[1])
+
             for miscSprite in self.miscSprites:
                 miscSprite.draw()
             avSprite.draw()

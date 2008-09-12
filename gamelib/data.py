@@ -157,8 +157,15 @@ class FontLoader(DynamicCachingLoader):
         font.add_directory(data_dir)
 
     def LoadResource(self, resourceName):
+        size = 14
         if resourceName == 'ohcrud':
             name = 'Oh Crud BB'
+        elif resourceName == 'ohcrud28':
+            name = 'Oh Crud BB'
+            size = 28
+        elif resourceName == 'ohcrud32':
+            name = 'Oh Crud BB'
+            size = 32
         elif resourceName == 'schoolgirl':
             name = 'CatholicSchoolGirls BB'
         elif resourceName == 'default':
@@ -166,7 +173,7 @@ class FontLoader(DynamicCachingLoader):
         else:
             name = resourceName
         try:
-            myFont = font.load(name, 14, bold=True)
+            myFont = font.load(name, size, bold=True)
         except Exception, ex:
             log_info('Failed loading font')
             myFont = font.load('Arial', 14, bold=True)
