@@ -175,13 +175,24 @@ class StringHud(pyglet.sprite.Sprite):
 
 class EnergyMeter(object):
     def __init__(self, pos):
+        events.AddListener(self)
         self.pos = pos
         self.yoImg = YoyoHud()
+        self.yoImgShake = [0,0]
 
     def draw(self, avatar):
         x = self.pos[0]
         self.yoImg.x = x
         self.yoImg.y = self.pos[1]
+        if self.yoImgShake[0] or self.yoImgShake[1]:
+            import random
+            self.yoImgShake[0] = abs(self.yoImgShake[0]) - random.randint(0,4)
+            self.yoImgShake[1] = abs(self.yoImgShake[1]) - random.randint(0,4)
+            self.yoImgShake[0] *= random.choice([1,-1])
+            self.yoImgShake[1] *= random.choice([1,-1])
+            self.yoImg.x += self.yoImgShake[0]
+            self.yoImg.y += self.yoImgShake[1]
+            
         x += 30
         for i in range(avatar.energy):
             stringImg = StringHud()
@@ -192,6 +203,10 @@ class EnergyMeter(object):
         if avatar.yoyo:
             self.yoImg.draw()
 
+    def On_AttackHit(self, attack, attacker, victim):
+        if isinstance(attacker, Avatar):
+            self.yoImgShake = [10,10]
+
 class Level(Scene):
     def __init__(self, levelNum):
         events.AddListener(self)
@@ -201,7 +216,9 @@ class Level(Scene):
         #self.bg = data.pngs['levelbg'+strLevelNum+'.png']
 
         filePath= os.path.join(data.data_dir, 'levelbg%02d-?.png' % levelNum)
-        self.bgImages = [data.pngs[png] for png in glob.glob(filePath)]
+        bgPngs = glob.glob(filePath)
+        bgPngs.sort()
+        self.bgImages = [data.pngs[png] for png in bgPngs]
 
         self.walkMask = data.levelMasks[strLevelNum]
         self.visualEffects = visualeffects.EffectManager()

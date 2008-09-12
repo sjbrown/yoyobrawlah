@@ -7,6 +7,8 @@ import events
 from util import ShadowSprite
 from animation import Anim
 
+from pyglet.gl import *
+
 class EnemySprite(pyglet.sprite.Sprite):
     def __init__(self, enemy):
         self.enemy = enemy
@@ -47,6 +49,7 @@ class TeddySprite(EnemySprite):
 
     def draw(self):
         self.shadow.draw()
+        self.color = (200, 10, 10)
         EnemySprite.draw(self)
 
     def update(self, timeChange=None):
