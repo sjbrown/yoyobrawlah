@@ -47,6 +47,9 @@ class Enemy(Walker):
             print 'enemy death!'
             events.Fire('EnemyDeath', self)
 
+    def getCollidableWidth(self):
+        return 60
+
     def getDesiredLocation(self):
         if not self.knownAvatars:
             return self.feetPos
@@ -90,7 +93,7 @@ class Enemy(Walker):
 
     def update_stunned(self, timeChange):
         self.stunCounter += timeChange
-        print 'still stunned', self.stunCounter
+        #print 'still stunned', self.stunCounter
         if self.stunCounter >= 0.6:
             self.unstun()
 

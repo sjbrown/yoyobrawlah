@@ -4,11 +4,13 @@ import pyglet
 import events
 from walker import Walker
 import attacks
+from attacks import State as attStates
 from util import clamp, outOfBounds, Facing, Rect
 
 class State:
     normal = 'normal'
     stunned = 'stunned'
+    attacking = 'attacking'
 
 def GetFriction(orig, absFriction):
     '''Return the friction.  Makes sure that the friction opposes the orig'''
@@ -40,8 +42,6 @@ class Avatar(Walker):
         Walker.__init__(self)
         events.AddListener(self)
         self.health = 10
-        self.energy = 1
-        self.maxEnergy = 5
         self.state = State.normal
         self.upPressed = False
         self.rightPressed = False
@@ -61,11 +61,18 @@ class Avatar(Walker):
                         'walkthedog':None,
                         'shootthemoon':None,
                        }
+        self.strings = []
         self.selectedAttack = None
 
+    def getEnergy(self):
+        # max energy is 5
+        return min(self.getStringLength(), 5)
+
+    def getStringLength(self):
+        return len(self.strings)
 
     def pickupString(self):
-        self.energy += 1
+        self.strings.append(1)
     def pickupYoyo(self, yoyo):
         self.yoyo = yoyo
         if yoyo:
@@ -74,7 +81,7 @@ class Avatar(Walker):
         
     def setAttack(self, attackName):
         # you can only do looping attack until you get the 3rd string
-        if self.energy < 3:
+        if self.getStringLength() < 3:
             attackName = 'looping'
         newAttack = self.attacks.get(attackName)
         if newAttack:
@@ -85,23 +92,27 @@ class Avatar(Walker):
         return level.getActiveLevel().getAttackables()
 
     def doAttack(self):
-        print 'self doing attack'
         if not self.selectedAttack:
             print 'fail no attack slected'
             return
         if self.state == State.stunned:
             self.stunCounter += 0.1
             return
-        targets = self.getAttackables()
+        if self.state == State.attacking:
+            # already in the middle of it
+            return
         print 'really attacking', self.selectedAttack
+        self.state = State.attacking
         self.selectedAttack.wipe()
-        self.selectedAttack.instantAttack(self.feetPos, self.facing, targets)
-        victimsAndAmount = self.selectedAttack.GetVictimsAndAmount()
-        for victim, attackAmt in victimsAndAmount:
-            power = attackAmt*self.energy
-            victim.Hurt(power)
-            print 'Avatar hit victim', power
-            events.Fire('AttackHit', self.selectedAttack, self, victim)
+        self.selectedAttack.start()
+        #targets = self.getAttackables()
+        #self.selectedAttack.instantAttack(self.feetPos, self.facing, targets)
+        #victimsAndAmount = self.selectedAttack.GetVictimsAndAmount()
+        #for victim, attackAmt in victimsAndAmount:
+            #power = attackAmt*self.getEnergy()
+            #victim.Hurt(power)
+            #print 'Avatar hit victim', power
+            #events.Fire('AttackHit', self.selectedAttack, self, victim)
 
 
     def On_UpKeyPress(self):
@@ -127,9 +138,34 @@ class Avatar(Walker):
             
     def update(self, timeChange=None):
         if self.state == State.normal:
+            #self.update_endAttack(timeChange)
             return self.update_walk(timeChange)
         elif self.state == State.stunned:
+            #self.update_endAttack(timeChange)
             return self.update_stunned(timeChange)
+        elif self.state == State.attacking:
+            self.update_walk(timeChange)
+            return self.update_attack(timeChange)
+
+    def update_attack(self, timeChange):
+        attStates = attacks.State
+
+        self.selectedAttack.update(timeChange, self.feetPos, self.facing,
+                                   self.getAttackables(), self.yoyo.gfxYoyo)
+        victimsAndAmount = self.selectedAttack.GetVictimsAndAmount()
+        for victim, attackAmt in victimsAndAmount:
+            power = attackAmt*self.getEnergy()
+            victim.Hurt(power)
+            print 'Avatar hit victim', power
+            events.Fire('AttackHit', self.selectedAttack, self, victim)
+        if self.selectedAttack.state == attStates.done:
+            self.state = State.normal
+
+    def update_endAttack(self, timeChange):
+        if ( self.selectedAttack and
+             self.selectedAttack.state == attStates.endingAttack):
+            self.selectedAttack.update(timeChange, self.feetPos, self.facing,
+                                   self.getAttackables(), self.yoyo.gfxYoyo)
 
     def update_stunned(self, timeChange):
         self.stunCounter += timeChange

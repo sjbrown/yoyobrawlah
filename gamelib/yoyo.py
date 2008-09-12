@@ -4,6 +4,8 @@ import pyglet
 from pyglet.gl import *
 from pyglet.window.key import *
 
+import window
+
 FACING_RIGHT = 1
 FACING_LEFT = -1
 
@@ -26,10 +28,26 @@ class YoYo:
 
         self.facing = FACING_LEFT
 
-        self.color = (250, 100, 100)
+        self.color = (250, 10, 10)
         self.stringMaxLength = 200
 
         self.angle = 0
+
+    def moveToFeetPos(self, feetPos, facing):
+        deltaX = feetPos[0] - self.x
+        deltaY = feetPos[1] - self.y + 40
+
+        self.x = feetPos[0]
+        self.y = feetPos[1] + 40
+        self.yoyoX += deltaX
+        self.yoyoY += deltaY
+
+        self.offsetX = window.bgOffset[0]
+        self.offsetY = window.bgOffset[1]
+
+        self.facing = facing
+
+
 
     def throw(self, moveType):
         if self.moveType or self.yoyoReturn:

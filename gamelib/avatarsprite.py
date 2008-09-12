@@ -36,6 +36,11 @@ class AvatarSprite(pyglet.sprite.Sprite):
     def draw(self):
         self.shadow.draw()
         pyglet.sprite.Sprite.draw(self)
+        if self.avatar.yoyo:
+            if self.avatar.selectedAttack:
+                self.avatar.selectedAttack.draw(self.avatar, self.yoyo)
+            else:
+                self.yoyo.draw()
 
     def update(self, timeChange=None):
         self.avatar.update(timeChange)
@@ -49,23 +54,17 @@ class AvatarSprite(pyglet.sprite.Sprite):
         self.x = self.avatar.x
         self.y = self.avatar.y
 
-        deltaX = self.x - self.yoyo.x + 35
-        deltaY = self.y - self.yoyo.y + 40
-
-        self.yoyo.x = self.x + 35
-        self.yoyo.y = self.y + 40
-        self.yoyo.yoyoX += deltaX
-        self.yoyo.yoyoY += deltaY
-
         self.x += window.bgOffset[0]
         self.y += window.bgOffset[1]
 
-        self.yoyo.offsetX = window.bgOffset[0]
-        self.yoyo.offsetY = window.bgOffset[1]
+        if self.avatar.yoyo:
+            self.avatar.yoyo.gfxYoyo = self.yoyo
+            self.yoyo.moveToFeetPos(self.avatar.feetPos,
+                                    self.avatar.facing)
+            self.yoyo.stringMaxLength = self.avatar.getStringLength()*30
 
-        self.yoyo.facing = self.avatar.facing
-
-        self.yoyo.update(timeChange)
+            if not self.avatar.selectedAttack:
+                self.yoyo.update(timeChange)
 
         self.shadow.x = self.x
         self.shadow.y = self.y - (self.shadow.height/2) #shadow center = feetpos

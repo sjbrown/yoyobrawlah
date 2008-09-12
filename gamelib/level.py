@@ -146,9 +146,6 @@ class StringPickup(TriggerZone):
         self.sprite = StringPickupSprite(self, *self.rect.center)
 
     def fire(self, firer):
-        if firer.energy == firer.maxEnergy:
-            return
-
         if self.fired:
             return
         if not isinstance(firer, Avatar):
@@ -209,7 +206,7 @@ class EnergyMeter(object):
             self.yoImg.y += self.yoImgShake[1]
             
         x += 30
-        for i in range(avatar.energy):
+        for i in range(avatar.getStringLength()):
             stringImg = StringHud()
             stringImg.x = x - (i*2)
             stringImg.y = self.pos[1]
@@ -354,7 +351,6 @@ class Level(Scene):
             for miscSprite in self.miscSprites:
                 miscSprite.draw()
             avSprite.draw()
-            avSprite.yoyo.draw()
 
             for enemySprite in self.enemySprites.values():
                 enemySprite.draw()
@@ -365,8 +361,9 @@ class Level(Scene):
             self.healthBar.draw()
             self.energyBar.draw(self.avatar)
 
-            self.fpsText.text = "fps: %d" % clock.get_fps()
-            self.fpsText.draw()
+            if DEBUG:
+                self.fpsText.text = "fps: %d" % clock.get_fps()
+                self.fpsText.draw()
 
             win.flip()
 
