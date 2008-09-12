@@ -73,6 +73,9 @@ class Avatar(Walker):
         events.Fire('AvatarPickup', self, yoyo)
         
     def setAttack(self, attackName):
+        # you can only do looping attack until you get the 3rd string
+        if self.energy < 3:
+            attackName = 'looping'
         newAttack = self.attacks.get(attackName)
         if newAttack:
             self.selectedAttack = newAttack
@@ -85,6 +88,9 @@ class Avatar(Walker):
         print 'self doing attack'
         if not self.selectedAttack:
             print 'fail no attack slected'
+            return
+        if self.state == State.stunned:
+            self.stunCounter += 0.1
             return
         targets = self.getAttackables()
         print 'really attacking', self.selectedAttack
@@ -127,7 +133,7 @@ class Avatar(Walker):
 
     def update_stunned(self, timeChange):
         self.stunCounter += timeChange
-        if self.stunCounter >= 0.3:
+        if self.stunCounter >= 0.5:
             self.unstun()
 
     def update_walk(self, timeChange):
@@ -165,8 +171,9 @@ class Avatar(Walker):
                 zone.fire(self)
 
     def stun(self):
+        print 'Avatar got stunned.  nooooo'
         self.state = State.stunned
-        self.stunCounter = 0.5
+        self.stunCounter = 0.0
 
     def unstun(self):
         self.state = State.normal
@@ -186,7 +193,7 @@ class Avatar(Walker):
     def On_AttackHit(self, attack, attacker, victim):
         if victim != self:
             return
-        if self.state not in [State.normal]:
+        if self.state == State.stunned:
             return
 
         if isinstance(attack, attacks.Hug):
