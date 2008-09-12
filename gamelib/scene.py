@@ -2,6 +2,7 @@
 
 import pyglet
 from pyglet import clock
+from pyglet import font
 from util import Rect
 import window
 import data
@@ -38,13 +39,38 @@ class Scene(object):
         events.RemoveListener(self)
         self.done = True
 
+class SimpleTextButton:
+    def __init__(self, text, x, y, selected=False):
+        self.bigFont = data.fonts['ohcrud32']
+        self.smallFont = data.fonts['ohcrud28']
+        self.text = text
+        self.x = x
+        self.y = y
+        self.selected = selected
+
+    def update(self, tick):
+        pass
+
+    def draw(self):
+        if self.selected:
+            text = font.Text(self.bigFont, self.text, x=self.x, y=self.y,
+                             color=(1, 1, 1, 1))
+        else:
+            text = font.Text(self.smallFont, self.text, x=self.x, y=self.y,
+                             color=(1, 0.5, 0.5, 1))
+    
+        text.draw()
+
 
 class Menu(Scene):
     def __init__(self):
         events.AddListener(self)
         self.done = False
         self.bg = data.pngs['menu.png']
-        self.miscSprites = []
+        self.miscSprites = [
+            SimpleTextButton('Start!', 400, 200, True),
+            SimpleTextButton('Full Screen', 400, 150, False)
+        ]
 
         self.keyPress = False
         self.on_key_press = window.window.event(self.on_key_press)
