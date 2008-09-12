@@ -20,6 +20,8 @@ import visualeffects
 
 from scene import Scene, Cutscene
 
+DEBUG = True
+
 _activeLevel = None
 def getActiveLevel():
     return _activeLevel
@@ -39,6 +41,7 @@ class TriggerZone(object):
         self.rect = Rect(rectTuple)
         self.level = level
         self.fired = False
+        self.debugSprite = TriggerZoneDebugSprite(self)
     def fire(self, firer):
         print 'firing triggerzone'
 
@@ -73,6 +76,18 @@ class EnemySpawn2(EnemySpawn):
         enemy.walkMask = self.level.walkMask
         enemy.showAvatar(firer)
         events.Fire('EnemyBirth', enemy)
+
+class TriggerZoneDebugSprite(pyglet.sprite.Sprite):
+    def __init__(self, zone):
+        pat = pyglet.image.SolidColorImagePattern((255,255,0,100))
+        img = pyglet.image.create(zone.rect.width, zone.rect.height, pat)
+        self.origX = zone.rect.x
+        self.origY = zone.rect.y
+        pyglet.sprite.Sprite.__init__(self, img, self.origX, self.origY)
+
+    def update(self, timeChange=None):
+        self.x = self.origX + window.bgOffset[0]
+        self.y = self.origY + window.bgOffset[1]
 
 class PickupSprite(pyglet.sprite.Sprite):
     def __init__(self, imgName, zone, x, y):
@@ -246,6 +261,8 @@ class Level(Scene):
             self.triggerZones.append(zone)
             if hasattr(zone, 'sprite'):
                 self.miscSprites.append(zone.sprite)
+            if DEBUG and hasattr(zone, 'debugSprite'):
+                self.miscSprites.append(zone.debugSprite)
 
         self.enemySprites = {}
 

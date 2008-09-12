@@ -41,7 +41,7 @@ class Enemy(Walker):
         if self.health > 0:
             print 'enemy hurt!'
             print 'switching to state stunned'
-            self.state = State.stunned
+            self.stun()
             events.Fire('EnemyHurt', self)
         else:
             print 'enemy death!'
@@ -70,6 +70,9 @@ class Enemy(Walker):
     def showAvatar(self, avatar):
         self.knownAvatars.append(avatar)
 
+    def stun(self):
+        self.state = State.stunned
+
     def unstun(self):
         print 'unstun!'
         self.state = State.fastWalking
@@ -84,7 +87,6 @@ class Enemy(Walker):
             return self.update_talk(timeChange)
         elif self.state == State.stunned:
             return self.update_stunned(timeChange)
-
 
     def update_stunned(self, timeChange):
         self.stunCounter += timeChange
@@ -208,11 +210,16 @@ class TalkingEnemy(Enemy):
         Enemy.__init__(self)
         self.state = State.talking
         self.speech = [(2, 'OH HAI'),
-                       (3, 'CAN IT BE HUGZ TEIM NOW?'),
+                       (3, 'CAN IT BE HUGZ TIEM NOW?'),
                       ]
         self.speechCounter = 0.0
         self.speechIter = None
         self.currentPart = None
+
+    def stun(self):
+        if self.state == State.talking:
+            events.Fire('StopSpeech', self)
+        self.state = State.stunned
 
     def update_talk(self, timeChange):
         if self.currentPart == None:
