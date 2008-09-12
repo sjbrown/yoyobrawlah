@@ -20,3 +20,11 @@ class Facing:
     right = 1
     up = 1
     down = -1
+
+import pyglet
+import data
+
+class ShadowSprite(pyglet.sprite.Sprite):
+    def __init__(self):
+        img = data.pngs['shadow.png']
+        pyglet.sprite.Sprite.__init__(self, img, 0, 0)

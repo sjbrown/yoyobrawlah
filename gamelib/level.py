@@ -12,7 +12,7 @@ import os.path
 from avatar import Avatar, LogicalYoyo
 from avatarsprite import AvatarSprite
 from enemy import Enemy, TalkingEnemy
-from enemysprite import EnemySprite
+from enemysprite import TeddySprite
 
 from pyglet.gl import *
 
@@ -74,10 +74,10 @@ class EnemySpawn2(EnemySpawn):
         enemy.showAvatar(firer)
         events.Fire('EnemyBirth', enemy)
 
-class YoyoPickupSprite(pyglet.sprite.Sprite):
-    def __init__(self, zone, x, y):
+class PickupSprite(pyglet.sprite.Sprite):
+    def __init__(self, imgName, zone, x, y):
         self.zone = zone
-        img = data.pngs['yoyo_pickup.png']
+        img = data.pngs[imgName]
         self.origX = x - img.width/2
         self.origY = y - img.height/2
         pyglet.sprite.Sprite.__init__(self, img, self.origX, self.origY)
@@ -99,6 +99,15 @@ class YoyoPickupSprite(pyglet.sprite.Sprite):
             if self.opacity < 50:
                 events.Fire('SpriteRemove', self)
 
+class YoyoPickupSprite(PickupSprite):
+    def __init__(self, zone, x, y):
+        PickupSprite.__init__(self, 'yoyo_pickup.png', zone, x, y)
+
+class StringPickupSprite(PickupSprite):
+    def __init__(self, zone, x, y):
+        PickupSprite.__init__(self, 'string_pickup.png', zone, x, y)
+
+
 class YoyoPickup(TriggerZone):
     def __init__(self, rectTuple, level):
         TriggerZone.__init__(self, rectTuple, level)
@@ -114,6 +123,24 @@ class YoyoPickup(TriggerZone):
         self.fired = True
         yoyo = LogicalYoyo()
         firer.pickupYoyo(yoyo)
+        events.Fire('TriggerZoneRemove', self)
+
+class StringPickup(TriggerZone):
+    def __init__(self, rectTuple, level):
+        TriggerZone.__init__(self, rectTuple, level)
+        self.sprite = StringPickupSprite(self, *self.rect.center)
+
+    def fire(self, firer):
+        if firer.energy == firer.maxEnergy:
+            return
+
+        if self.fired:
+            return
+        if not isinstance(firer, Avatar):
+            return
+        print 'string pickup!'
+        self.fired = True
+        firer.pickupString()
         events.Fire('TriggerZoneRemove', self)
 
 class Heart(pyglet.sprite.Sprite):
@@ -136,6 +163,50 @@ class HeartMeter:
             heart.y = 0
             heart.draw()
 
+class YoyoHud(pyglet.sprite.Sprite):
+    def __init__(self):
+        imageFile = data.pngs['yorect_small.png']
+        pyglet.sprite.Sprite.__init__(self, imageFile, 0, 0)
+
+class StringHud(pyglet.sprite.Sprite):
+    def __init__(self):
+        imageFile = data.pngs['string_hud.png']
+        pyglet.sprite.Sprite.__init__(self, imageFile, 0, 0)
+
+class EnergyMeter(object):
+    def __init__(self, pos):
+        events.AddListener(self)
+        self.pos = pos
+        self.yoImg = YoyoHud()
+        self.yoImgShake = [0,0]
+
+    def draw(self, avatar):
+        x = self.pos[0]
+        self.yoImg.x = x
+        self.yoImg.y = self.pos[1]
+        if self.yoImgShake[0] or self.yoImgShake[1]:
+            import random
+            self.yoImgShake[0] = abs(self.yoImgShake[0]) - random.randint(0,4)
+            self.yoImgShake[1] = abs(self.yoImgShake[1]) - random.randint(0,4)
+            self.yoImgShake[0] *= random.choice([1,-1])
+            self.yoImgShake[1] *= random.choice([1,-1])
+            self.yoImg.x += self.yoImgShake[0]
+            self.yoImg.y += self.yoImgShake[1]
+            
+        x += 30
+        for i in range(avatar.energy):
+            stringImg = StringHud()
+            stringImg.x = x - (i*2)
+            stringImg.y = self.pos[1]
+            stringImg.draw()
+            x += stringImg.width
+        if avatar.yoyo:
+            self.yoImg.draw()
+
+    def On_AttackHit(self, attack, attacker, victim):
+        if isinstance(attacker, Avatar):
+            self.yoImgShake = [10,10]
+
 class Level(Scene):
     def __init__(self, levelNum):
         events.AddListener(self)
@@ -145,7 +216,9 @@ class Level(Scene):
         #self.bg = data.pngs['levelbg'+strLevelNum+'.png']
 
         filePath= os.path.join(data.data_dir, 'levelbg%02d-?.png' % levelNum)
-        self.bgImages = [data.pngs[png] for png in glob.glob(filePath)]
+        bgPngs = glob.glob(filePath)
+        bgPngs.sort()
+        self.bgImages = [data.pngs[png] for png in bgPngs]
 
         self.walkMask = data.levelMasks[strLevelNum]
         self.visualEffects = visualeffects.EffectManager()
@@ -158,6 +231,7 @@ class Level(Scene):
         healthFont = font.load('Oh Crud BB', 28)
         self.healthText = font.Text(healthFont, x=10, y=25, text='Health:')
         self.healthBar = HeartMeter()
+        self.energyBar = EnergyMeter((240,5))
 
         self.fpsText = font.Text(healthFont, x=650, y=25)
 
@@ -272,6 +346,7 @@ class Level(Scene):
 
             self.healthText.draw()
             self.healthBar.draw()
+            self.energyBar.draw(self.avatar)
 
             self.fpsText.text = "fps: %d" % clock.get_fps()
             self.fpsText.draw()
@@ -286,7 +361,7 @@ class Level(Scene):
 
     def On_EnemyBirth(self, enemy):
         print 'handling enemy birth'
-        enemySprite = EnemySprite(enemy)
+        enemySprite = TeddySprite(enemy)
         self.enemySprites[enemy] = enemySprite
 
     def On_EnemyDeath(self, enemy):

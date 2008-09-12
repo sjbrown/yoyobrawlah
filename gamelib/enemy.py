@@ -9,6 +9,7 @@ import attacks
 class State:
     idle = 'idle'
     talking = 'talking'
+    stunned = 'stunned'
     fastWalking = 'fast walking'
     slowWalking = 'slow walking'
     startingAttack = attacks.State.startingAttack
@@ -33,11 +34,14 @@ class Enemy(Walker):
         self.xFightingReach = 10
         self.yFightingReach = 4
         self.attack = attacks.Hug()
+        self.stunCounter = 0
 
     def Hurt(self, amount):
         self.health -= amount
         if self.health > 0:
             print 'enemy hurt!'
+            print 'switching to state stunned'
+            self.state = State.stunned
             events.Fire('EnemyHurt', self)
         else:
             print 'enemy death!'
@@ -63,15 +67,30 @@ class Enemy(Walker):
             return True
         return False
 
-
     def showAvatar(self, avatar):
         self.knownAvatars.append(avatar)
+
+    def unstun(self):
+        print 'unstun!'
+        self.state = State.fastWalking
+        self.stunCounter = 0
 
     def update(self, timeChange=None):
         if self.state in State.attackingStates:
             return self.update_attack(timeChange)
         elif self.state in State.walkingStates:
             return self.update_walk(timeChange)
+        elif self.state == State.talking:
+            return self.update_talk(timeChange)
+        elif self.state == State.stunned:
+            return self.update_stunned(timeChange)
+
+
+    def update_stunned(self, timeChange):
+        self.stunCounter += timeChange
+        print 'still stunned', self.stunCounter
+        if self.stunCounter >= 0.6:
+            self.unstun()
 
     def update_attack(self, timeChange):
         attStates = attacks.State
@@ -102,7 +121,6 @@ class Enemy(Walker):
             self.state = State.startingAttack
             self.attack.start()
             return
-
 
         hPower = 0
         vPower = 0
@@ -195,14 +213,6 @@ class TalkingEnemy(Enemy):
         self.speechCounter = 0.0
         self.speechIter = None
         self.currentPart = None
-
-    def update(self, timeChange=None):
-        if self.state in State.attackingStates:
-            return self.update_attack(timeChange)
-        elif self.state in State.walkingStates:
-            return self.update_walk(timeChange)
-        elif self.state == State.talking:
-            return self.update_talk(timeChange)
 
     def update_talk(self, timeChange):
         if self.currentPart == None:
