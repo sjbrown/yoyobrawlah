@@ -22,6 +22,7 @@ class EffectManager(object):
         pass
 
     def On_WhiffSpecial(self, pos):
+        data.mp3s['string-back.mp3'].play()
         pass
 
     def On_SpriteRemove(self, sprite):
@@ -37,6 +38,8 @@ class EffectManager(object):
         pass
 
     def On_EnemyDeath(self, enemy):
+        print "enemy death"
+        data.mp3s['death%d.mp3' % randint(1, 2)].play()
         pass
 
 

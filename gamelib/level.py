@@ -21,6 +21,7 @@ import visualeffects
 import soundeffects
 
 from scene import Scene, Cutscene, DeathCutscene
+import main
 
 DEBUG = True
 soundtrack = None
@@ -497,7 +498,7 @@ class Level(Scene):
         self.bgImages = [data.pngs[png] for png in bgPngs]
 
         self.visualEffects = visualeffects.EffectManager()
-        self.soundEffects = soundeffects.EffectManager()
+        #self.soundEffects = soundeffects.EffectManager()
 
         if self.levelNum == 1:
             self.avatar = Avatar()
