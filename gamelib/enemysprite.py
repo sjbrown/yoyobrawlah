@@ -31,6 +31,11 @@ class EnemySprite(pyglet.sprite.Sprite):
         elif not self.opacity == 255:
             self.opacity = 255
 
+    def On_LevelCompletedEvent(self, *args):
+        print 'enemy cleanup'
+        del self.enemy
+        events.RemoveListener(self)
+
     def On_AttackHit(self, attack, attacker, victim):
         if victim == self.enemy:
             self.blinkingCounter = 0.5

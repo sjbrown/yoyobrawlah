@@ -170,6 +170,8 @@ class Avatar(Walker):
             return
         attStates = attacks.State
 
+        print 'va', len(self.selectedAttack.victimsAndAmounts)
+        print 'vt', len(self.selectedAttack.visitedTargets)
         self.selectedAttack.update(timeChange, self.feetPos, self.facing,
                                    self.getAttackables(), self.yoyo.gfxYoyo)
         victimsAndAmount = self.selectedAttack.GetVictimsAndAmount()

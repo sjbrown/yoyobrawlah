@@ -11,6 +11,7 @@ import data
 import attacks
 
 import euclid
+import weakref
 
 def toScreenPos(pos):
     return [pos[0] + window.bgOffset[0], pos[1] + window.bgOffset[1]]
@@ -19,7 +20,7 @@ class EffectManager(object):
     def __init__(self):
         self.sprites = []
         events.AddListener(self)
-        self.speechBubbles = {}
+        self.speechBubbles = weakref.WeakKeyDictionary()
 
     def On_EnemyHurt(self, enemy):
         pos = toScreenPos(enemy.feetPos)
@@ -76,7 +77,7 @@ class EffectManager(object):
     def On_LevelCompletedEvent(self, *args):
         print 'LVL COMPLETE'
         self.sprites = []
-        self.speechBubbles = {}
+        self.speechBubbles = weakref.WeakKeyDictionary()
 
 class SpeechBubble(pyglet.sprite.Sprite):
     xPadding = 10

@@ -60,9 +60,15 @@ def ConsumeEventQueue():
 		#log_info( 'firing event' + str( evName ) )
 		print 'number of listeners:', len(__listeners)
 		keys = __listeners.keys()
-		for k in keys:
-		    print ' ', k
-		for listener in sorted(keys, lambda x,y: cmp(x.__class__.__name__, y.__class__.__name__)):
+                #import gc
+		#sorr = sorted(keys, lambda x,y: cmp(x.__class__.__name__, y.__class__.__name__))
+		#for k in sorr:
+		    #if 'Kitty' in k.__class__.__name__:
+                        #print ' ', k
+                        #print gc.get_referrers(k)
+                        #referrers = gc.get_referrers(k)
+                        #print [r for r in referrers if (r is not keys) and (r is not sorr)]
+		for listener in keys:
 			methodName = "On_"+ evName
 			#if the listener has a handler, call it
 			try:

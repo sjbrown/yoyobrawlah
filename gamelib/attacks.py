@@ -210,7 +210,6 @@ class YoyoAttack(Attack):
                 #need to be in y-plane, plus or minus 6 pixels
                 continue
             vDistance = t.feetPos[0] - feetPos[0]
-            print 'vdistance', vDistance
             if facing * vDistance < 0:
                 #facing the wrong way
                 continue
