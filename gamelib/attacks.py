@@ -26,6 +26,15 @@ class Attack(object):
         self.state = State.endingAttack
         self.counter = self.endDuration
 
+    def update(self, timeChange, feetPos, facing, target):
+        self.wipe()
+        if self.state == State.startingAttack:
+            return self.update_start(timeChange, feetPos, facing, target)
+        elif self.state == State.attacking:
+            self.update_attack(timeChange, feetPos, facing, target)
+        elif self.state == State.endingAttack:
+            return self.update_end(timeChange, feetPos, facing, target)
+
     def update_start(self, timeChange, feetPos, facing, target):
         self.counter -= timeChange
         if self.counter <= 0:
@@ -47,6 +56,80 @@ class Attack(object):
 
     def GetVictimsAndAmount(self):
         return self.victimsAndAmounts[:]
+
+
+import pyglet
+import data
+import animation
+from util import ShadowSprite
+class ThrownBottleSprite(pyglet.sprite.Sprite):
+    def __init__(self):
+        self.currentAnim = animation.BeerThrowAnim()
+        pyglet.sprite.Sprite.__init__(self, self.currentAnim.animation, 0, 0)
+        self.shadow = ShadowSprite()
+        self.shadow.scale = float(self.width)/self.shadow.width
+        self.shadow.opacity = 128
+
+    def draw(self):
+        self.shadow.x = self.x
+        self.shadow.y = self.y - (self.shadow.height/2) #shadow center = feetpos
+        self.shadow.draw()
+        pyglet.sprite.Sprite.draw(self)
+
+    def update(self, timeChange=None):
+        pass
+
+
+class KnifeThrow(Attack):
+    startDuration = 1 
+    attackDuration = 2
+    endDuration = 1 # give them a chance to escape
+    baseAmount = 0
+
+    def __init__(self, spriteClassName):
+        self.knifePos = None
+        self.facing = None
+        self.knifeSprite = None
+        self.speed = 5
+        self.spriteClass = globals()[spriteClassName]
+
+    #def update(self, timeChange=None):
+        #self.x
+
+    def update_start(self, timeChange, feetPos, facing, target):
+        if not self.knifePos:
+            self.knifePos = list(feetPos)
+            self.facing = facing
+            self.knifeSprite = self.spriteClass()
+        self.knifeSprite.x = feetPos[0] + window.bgOffset[0]
+        self.knifeSprite.y = feetPos[1] + window.bgOffset[1]
+        self.counter -= timeChange
+        if self.counter <= 0:
+            self.state = State.attacking
+            self.counter = self.attackDuration
+
+    def update_attack(self, timeChange, feetPos, facing, target):
+        self.wipe()
+        self.knifeSprite.update(timeChange)
+        self.knifePos[0] += self.facing*self.speed
+        self.knifeSprite.x = self.knifePos[0] + window.bgOffset[0]
+        self.knifeSprite.y = self.knifePos[1] + window.bgOffset[1]
+
+        xdelta = abs(self.knifePos[0] - target.feetPos[0])
+        ydelta = abs(self.knifePos[1] - target.feetPos[1])
+
+        if xdelta < 10 and ydelta < 5:
+            self.victimsAndAmounts.append((target,1))
+            return self.end()
+
+        Attack.update_attack(self, timeChange, feetPos, facing, target)
+
+    def update_end(self, timeChange, feetPos, facing, target):
+        self.knifePos = None
+        self.knifeSprite = None
+        self.counter -= timeChange
+        if self.counter <= 0:
+            self.state = State.done
 
 
 class Hug(Attack):
@@ -78,7 +161,6 @@ class Hug(Attack):
 
     def instantAttack(self, feetPos, facing, target):
         self.victimsAndAmounts.append((target,0))
-            
 
 class ExplosionAttack(Attack):
     pass

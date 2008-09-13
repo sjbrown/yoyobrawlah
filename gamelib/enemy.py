@@ -22,6 +22,7 @@ class State:
 
 class Enemy(Walker):
     def __init__(self):
+        events.AddListener(self)
         Walker.__init__(self)
         self.health = 10
         self.energy = 1
@@ -35,6 +36,9 @@ class Enemy(Walker):
         self.yFightingReach = 4
         self.attack = attacks.Hug()
         self.stunCounter = 0
+
+    def On_AvatarDeath(self, avatar):
+        self.state = State.idle
 
     def Hurt(self, amount):
         self.health -= amount
@@ -91,6 +95,11 @@ class Enemy(Walker):
             return self.update_talk(timeChange)
         elif self.state == State.stunned:
             return self.update_stunned(timeChange)
+        elif self.state == State.idle:
+            return self.update_idle(timeChange)
+
+    def update_idle(self, timeChange):
+        pass
 
     def update_stunned(self, timeChange):
         self.stunCounter += timeChange
@@ -210,6 +219,8 @@ class WackyEnemy(Enemy):
         self.rect = newRect
 
 class TalkingEnemy(Enemy):
+    spriteClass = 'TeddySprite'
+    deathImg = 'tedDead'
     def __init__(self):
         Enemy.__init__(self)
         self.state = State.talking
@@ -243,3 +254,73 @@ class TalkingEnemy(Enemy):
                 events.Fire('StopSpeech', self)
                 self.state = State.fastWalking
                 
+class Speeches:
+    ohHai = [(2, 'OH HAI'),
+             (3, 'CAN IT BE HUGZ TIEM NOW?'),
+            ]
+    hugs = [(2, 'HUUUGS!'),
+            ]
+    nohugs = [(2, "You don't like our hugs?"),
+             (2, "THEN YOU WILL DIE!"),
+            ]
+    gutyou = [(2, "I GUT YOU, FISHY!"),
+            ]
+
+class Teddy:
+    spriteClass = 'TeddySprite'
+    deathImg = 'tedDead'
+    idleImg = 'tedStand'
+class Kitty:
+    spriteClass = 'KittySprite'
+    deathImg = 'kitDead'
+    idleImg = 'kitStand'
+
+class TalkingKitty(Kitty, TalkingEnemy):
+    spriteClass = 'KittySprite'
+    def __init__(self, speech):
+        TalkingEnemy.__init__(self)
+        self.speech = speech
+
+
+class ThrowingKitty(Kitty, Enemy):
+    spriteClass = 'ThrowingKittySprite'
+    missileSprite = 'ThrownBottleSprite'
+    def __init__(self):
+        Enemy.__init__(self)
+        self.xFightingReach = 600
+        self.attack = attacks.KnifeThrow(self.missileSprite)
+
+    def getDesiredLocation(self):
+        if not self.knownAvatars:
+            return self.feetPos
+        # go after the avatar
+        avPos = self.knownAvatars[0].feetPos
+        if avPos[0] > self.feetPos[0]:
+            self.facing = Facing.right
+        else:
+            self.facing = Facing.left
+        # line up on the Y axis to throw
+        return (self.feetPos[0], avPos[1])
+
+    def update_attack(self, timeChange):
+        attStates = attacks.State
+
+        target = self.knownAvatars[0]
+        self.attack.update(timeChange, self.feetPos, self.facing, target)
+        self.state = self.attack.state #HACK!!!
+        victimsAndAmount = self.attack.GetVictimsAndAmount()
+        for victim, attackAmt in victimsAndAmount:
+            power = attackAmt*self.energy
+            victim.Hurt(power)
+            events.Fire('AttackHit', self.attack, self, victim)
+        if (self.attack.state == attStates.attacking and
+            not self.desireWithinReach()):
+            self.attack.end()
+        if self.attack.state == attStates.done:
+            self.state = State.fastWalking
+
+    def draw(self):
+        if self.attack.knifeSprite:
+            # oh yeah.  big hack here.
+            self.attack.knifeSprite.draw()
+        Enemy.draw(self)

@@ -12,6 +12,9 @@ import attacks
 
 import euclid
 
+def toScreenPos(pos):
+    return [pos[0] + window.bgOffset[0], pos[1] + window.bgOffset[1]]
+
 class EffectManager(object):
     def __init__(self):
         self.sprites = []
@@ -19,9 +22,7 @@ class EffectManager(object):
         self.speechBubbles = {}
 
     def On_EnemyHurt(self, enemy):
-        pos = list(enemy.feetPos)
-        pos[0] += window.bgOffset[0]
-        pos[1] += window.bgOffset[1]
+        pos = toScreenPos(enemy.feetPos)
         pos[1] += 50
         direction = {-1: Blood.left, 1:Blood.right}[enemy.facing]
         for drop in range(0, randint(5, 20)):
@@ -31,19 +32,15 @@ class EffectManager(object):
 
     def On_ExplosionSpecial(self, pos):
         print 'splode'
-        pos = list(pos)
-        pos[0] += window.bgOffset[0]
-        pos[1] += window.bgOffset[1]
-        for drop in range(0, randint(4, 8)):
+        pos = toScreenPos(pos)
+        for drop in range(0, randint(2, 4)):
             vector = euclid.Vector2(randint(-2,3), randint(-2,3))
             fb = Fireball(pos, vector)
             self.sprites.append(fb)
 
     def On_WhiffSpecial(self, pos):
         print 'whiff'
-        pos = list(pos)
-        pos[0] += window.bgOffset[0]
-        pos[1] += window.bgOffset[1]
+        pos = toScreenPos(pos)
         for drop in range(0, randint(5, 8)):
             vector = euclid.Vector2(randint(-2,3), randint(-2,3))
             puff = Puff(pos, vector)
@@ -71,6 +68,11 @@ class EffectManager(object):
         if speaker in self.speechBubbles:
             self.sprites.remove(self.speechBubbles[speaker])
             del self.speechBubbles[speaker]
+
+    def On_EnemyDeath(self, enemy):
+        cls = random.choice([EnemyDeath1, EnemyDeath2])
+        self.sprites.append(cls(enemy))
+
 
 class SpeechBubble(pyglet.sprite.Sprite):
     xPadding = 10
@@ -122,6 +124,41 @@ class HeartFloaty(pyglet.sprite.Sprite):
         self.opacity -= 2
         self.scale += 0.01
         if self.opacity < 80:
+            events.Fire('SpriteRemove', self)
+
+class EnemyDeath1(pyglet.sprite.Sprite):
+    def __init__(self, enemy):
+        img = data.pngs[enemy.deathImg]
+        pyglet.sprite.Sprite.__init__(self, img, 0, 0)
+        self.logicalX = enemy.feetPos[0]
+        self.logicalY = enemy.feetPos[1]
+
+    def update(self, timeChange=None):
+        self.x = self.logicalX + window.bgOffset[0]
+        self.y = self.logicalY + window.bgOffset[1]
+        self.logicalX += randint(-2, 2)
+        self.logicalY += 5
+        self.opacity -= 2
+        self.scale += 0.01
+        if self.opacity < 80:
+            events.Fire('SpriteRemove', self)
+
+class EnemyDeath2(EnemyDeath1):
+    def __init__(self, enemy):
+        EnemyDeath1.__init__(self, enemy)
+        self.logicalX -= 75
+        self.logicalY -= 14
+        self.color = (255,255,255)
+
+    def update(self, timeChange=None):
+        self.x = self.logicalX + window.bgOffset[0]
+        self.y = self.logicalY + window.bgOffset[1]
+        self.color = (self.color[0] -2,
+                      self.color[1] -2,
+                      self.color[2] -2,
+                     )
+        self.opacity -= 2
+        if self.color[0] < 20:
             events.Fire('SpriteRemove', self)
 
 
@@ -178,27 +215,46 @@ class Puff(Blood):
 
 
 class Fireball(Blood):
-    pink = (250, 200, 200, 128)
+    pink = (250, 200, 200, 10)
     red = (255, 25, 20, 128)
-    lightred = (240, 255, 25, 128)
+    lightred = (240, 255, 25, 10)
     colors = [pink, red, lightred]
     lifetimeRange = (3, 3)
 
+    def __init__(self, position, velocity):
+        self.color = random.choice(self.colors)
+        self.lifetime = 0.5
+        self.quad = gluNewQuadric()
+
+        varianceX = random.randint(-3,3)
+        varianceY = random.randint(-3,3)
+        self.position = [position[0]+varianceX, position[1]+varianceY]
+        self.velocity = velocity
+        self.outTick = 22
+        self.innerTick = 0
+
     def draw(self):
+        self.outTick += 1
+        self.innerTick += 30
+        inner = self.outTick * (float(self.innerTick)/(self.outTick+self.innerTick))
         glPushAttrib(GL_ENABLE_BIT)
 
         glColor4ub(*self.color)
         gluQuadricDrawStyle(self.quad, GLU_FILL)
 
         glLoadIdentity()
-        glTranslatef(self.position.x, self.position.y, 0)
+        glTranslatef(self.position[0], self.position[1], 0)
 
-        gluDisk(self.quad, 0, 6, 50, 1)
+        gluDisk(self.quad, inner, self.outTick, 50, 1)
         glLoadIdentity()
 
         glColor4ub(255,255,255,255)
         glPopAttrib()
 
+    def update(self, tick):
+        self.lifetime -= tick
+        if self.lifetime <= 0:
+            self.die()
 
 if __name__ == '__main__':
     from pyglet import window

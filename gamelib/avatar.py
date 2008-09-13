@@ -8,6 +8,8 @@ import attacks
 from attacks import State as attStates
 from util import clamp, outOfBounds, Facing, Rect
 
+GODMODE = False
+
 class State:
     normal = 'normal'
     stunned = 'stunned'
@@ -38,11 +40,13 @@ class AvatarAttack(object):
 
 class Avatar(Walker):
     '''This is the duder that a player controls'''
+    attackImg = 'subAttack'
+    deadImg = 'subdeath'
 
     def __init__(self):
         Walker.__init__(self)
         events.AddListener(self)
-        self.health = 10
+        self.health = 3
         self.state = State.normal
         self.upPressed = False
         self.rightPressed = False
@@ -67,6 +71,8 @@ class Avatar(Walker):
         return min(self.getStringLength(), 5)
 
     def getStringLength(self):
+        if GODMODE:
+            self.strings = [1,1,1,1,1,1]
         #always 1 string inside the yoyo
         return 1 + len(self.strings)
 
@@ -74,10 +80,15 @@ class Avatar(Walker):
         self.strings.append(1)
 
     def pickupYoyo(self, yoyo):
-        self.yoyo = yoyo
-        if yoyo:
-            self.attacks = attacks.makeYoyoAttacks(yoyo)
-        events.Fire('AvatarPickup', self, yoyo)
+        self.strings.append(1)
+        self.strings.append(1)
+        self.strings.append(1)
+        self.strings.append(1)
+        self.strings.append(1)
+        #self.yoyo = yoyo
+        #if yoyo:
+            #self.attacks = attacks.makeYoyoAttacks(yoyo)
+        #events.Fire('AvatarPickup', self, yoyo)
         
     def setAttack(self, attackName):
         # you can only do looping attack until you get the 3rd string
@@ -244,7 +255,11 @@ class Avatar(Walker):
         # when the events module dispatches its events
         if amount <= 0:
             return #not actually hurt
+        print 'reducing heatlh', self.health
         self.health -= amount
+        if self.health == 0 and self.strings:
+            self.health = 1
+            self.strings = []
         if self.health > 0:
             events.Fire('AvatarHurt', self)
         else:

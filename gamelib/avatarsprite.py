@@ -10,6 +10,8 @@ import euclid
 import effects
 from random import randint
 
+from util import Facing
+from avatar import State
 from animation import Anim
 from util import ShadowSprite
 
@@ -25,6 +27,7 @@ class AvatarSprite(pyglet.sprite.Sprite):
         self.blinkingCounter = 0.0
 
         self.yoyo = yoyo.YoYo()
+
         self.shadow = ShadowSprite()
         self.shadow.scale = float(self.width)/self.shadow.width
         self.shadow.opacity = 128
@@ -32,11 +35,15 @@ class AvatarSprite(pyglet.sprite.Sprite):
         self.on_key_press = window.window.event(self.on_key_press)
         self.on_key_release = window.window.event(self.on_key_release)
 
+        self.attackImgs = {Facing.left: data.pngs[self.avatar.attackImg +'_left'],
+                           Facing.right: data.pngs[self.avatar.attackImg]}
+        self.deadImgs = {Facing.left: data.pngs[self.avatar.deadImg +'_left'],
+                         Facing.right: data.pngs[self.avatar.deadImg]}
 
     def draw(self):
         self.shadow.draw()
         pyglet.sprite.Sprite.draw(self)
-        if self.avatar.yoyo:
+        if self.avatar.yoyo and not self.avatar.health == 0:
             if self.avatar.selectedAttack:
                 self.avatar.selectedAttack.draw(self.avatar, self.yoyo)
             else:
@@ -44,6 +51,18 @@ class AvatarSprite(pyglet.sprite.Sprite):
 
     def update(self, timeChange=None):
         self.avatar.update(timeChange)
+
+        if self.avatar.state == State.attacking:
+            self.image = self.attackImgs[self.avatar.facing]
+        elif self.avatar.health == 0:
+            self.image = self.deadImgs[self.avatar.facing]
+        else:
+            if self.avatar.facing != self.currentAnim.facing:
+                self.currentAnim.flip()
+                self.image = self.currentAnim.animation
+            elif self.image != self.currentAnim.animation:
+                self.image = self.currentAnim.animation
+            
 
         if self.blinkingCounter > 0:
             self.opacity = (10 + self.opacity) % 255
@@ -68,12 +87,18 @@ class AvatarSprite(pyglet.sprite.Sprite):
 
         self.shadow.x = self.x
         self.shadow.y = self.y - (self.shadow.height/2) #shadow center = feetpos
+        if self.avatar.health == 0:
+            self.shadow.y += 10
 
     def On_AttackHit(self, attack, attacker, victim):
         if victim == self.avatar:
             self.blinkingCounter = 1.0
 
+        
     def on_key_press(self, symbol, modifiers):
+        if self.avatar.health == 0:
+            return
+
         from pyglet.window import key
         keysPressed[symbol] = True
 
@@ -98,11 +123,11 @@ class AvatarSprite(pyglet.sprite.Sprite):
                 }
             fn = moveDict.get(symbol)
             if fn:
-                oldFacing = self.avatar.facing
+                #oldFacing = self.avatar.facing
                 fn()
-                print 'old', oldFacing, 'new', self.avatar.facing
-                if self.avatar.facing != oldFacing:
-                    self.currentAnim.flip()
+                #print 'old', oldFacing, 'new', self.avatar.facing
+                #if self.avatar.facing != oldFacing:
+                    #self.currentAnim.flip()
 
 
     def on_key_release(self, symbol, modifiers):

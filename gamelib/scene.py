@@ -112,6 +112,7 @@ class Cutscene(Scene):
         events.AddListener(self)
         self.done = False
         self.cutsceneNum = cutsceneNum
+        self.sound = False
         self.frameNum = 1
         strCutsceneNum = '%02d' % self.cutsceneNum
         strFrameNum = '%02d' % self.frameNum
@@ -145,7 +146,14 @@ class Cutscene(Scene):
         except Exception, ex:
             # passing them on...
             import level
-            nextScene = level.getLevel(self.nextLevelNum)
+            nextScene = level.getLevel(self.nextLevelNum, self.sound)
             nextScene.avatar = self.avatar
+            nextScene.sound = self.sound
             return nextScene
+
+class DeathCutscene(Cutscene):
+    def __init__(self):
+        Cutscene.__init__(self, 99)
+    def getNextScene(self):
+        return Menu()
 
