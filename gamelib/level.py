@@ -1,6 +1,7 @@
 import pyglet
 from pyglet import clock
 from pyglet import font
+from pyglet import media
 
 from util import clamp, Rect
 import window
@@ -21,20 +22,21 @@ import visualeffects
 from scene import Scene, Cutscene
 
 DEBUG = True
+soundtrack = None
 
 _activeLevel = None
 def getActiveLevel():
     return _activeLevel
 
-def getLevel(levelNum):
+def getLevel(levelNum, sound):
     # some levels have special menthods and thus have named classes in here.
     className = 'Level'+str(levelNum)
     if className in globals():
         # ie, Level2(2)
-        return globals()[className](levelNum)
+        return globals()[className](levelNum, sound)
     else:
         # just a generic level.  no special methods
-        return Level(levelNum)
+        return Level(levelNum, sound)
 
 class TriggerZone(object):
     def __init__(self, rectTuple, level):
@@ -99,6 +101,222 @@ class EnemySpawnLvl1_4(TriggerZone):
         self.fired = True
         enemy = TalkingEnemy()
         enemy.feetPos = (2200, 275)
+        enemy.walkMask = self.level.walkMask
+        enemy.showAvatar(firer)
+        events.Fire('EnemyBirth', enemy)
+
+class EnemySpawnLvl2_1(TriggerZone):
+    def fire(self, firer):
+        if self.fired:
+            return
+
+        self.fired = True
+        enemy = TalkingEnemy()
+        enemy.feetPos = (200, 265)
+        enemy.walkMask = self.level.walkMask
+        enemy.showAvatar(firer)
+        events.Fire('EnemyBirth', enemy)
+
+class EnemySpawnLvl2_2(TriggerZone):
+    def fire(self, firer):
+        if self.fired:
+            return
+
+        self.fired = True
+        enemy = TalkingEnemy()
+        enemy.feetPos = (200, 125)
+        enemy.walkMask = self.level.walkMask
+        enemy.showAvatar(firer)
+        events.Fire('EnemyBirth', enemy)
+
+class EnemySpawnLvl2_3(TriggerZone):
+    def fire(self, firer):
+        if self.fired:
+            return
+
+        self.fired = True
+        enemy = TalkingEnemy()
+        enemy.feetPos = (1200, 236)
+        enemy.walkMask = self.level.walkMask
+        enemy.showAvatar(firer)
+        events.Fire('EnemyBirth', enemy)
+
+class EnemySpawnLvl2_4(TriggerZone):
+    def fire(self, firer):
+        if self.fired:
+            return
+
+        self.fired = True
+        enemy = TalkingEnemy()
+        enemy.feetPos = (1750, 372)
+        enemy.walkMask = self.level.walkMask
+        enemy.showAvatar(firer)
+        events.Fire('EnemyBirth', enemy)
+
+class EnemySpawnLvl2_5(TriggerZone):
+    def fire(self, firer):
+        if self.fired:
+            return
+
+        self.fired = True
+        enemy = TalkingEnemy()
+        enemy.feetPos = (1900, 372)
+        enemy.walkMask = self.level.walkMask
+        enemy.showAvatar(firer)
+        events.Fire('EnemyBirth', enemy)
+
+class EnemySpawnLvl2_6(TriggerZone):
+    def fire(self, firer):
+        if self.fired:
+            return
+
+        self.fired = True
+        enemy = TalkingEnemy()
+        enemy.feetPos = (2080, 486)
+        enemy.walkMask = self.level.walkMask
+        enemy.showAvatar(firer)
+        events.Fire('EnemyBirth', enemy)
+
+class EnemySpawnLvl2_7(TriggerZone):
+    def fire(self, firer):
+        if self.fired:
+            return
+
+        self.fired = True
+        enemy = TalkingEnemy()
+        enemy.feetPos = (2466, 432)
+        enemy.walkMask = self.level.walkMask
+        enemy.showAvatar(firer)
+        events.Fire('EnemyBirth', enemy)
+
+class EnemySpawnLvl3_1(TriggerZone):
+    def fire(self, firer):
+        if self.fired:
+            return
+
+        self.fired = True
+        enemy = TalkingEnemy()
+        enemy.feetPos = (520, 402)
+        enemy.walkMask = self.level.walkMask
+        enemy.showAvatar(firer)
+        events.Fire('EnemyBirth', enemy)
+
+class EnemySpawnLvl3_2(TriggerZone):
+    def fire(self, firer):
+        if self.fired:
+            return
+
+        self.fired = True
+        enemy = TalkingEnemy()
+        enemy.feetPos = (365, 75)
+        enemy.walkMask = self.level.walkMask
+        enemy.showAvatar(firer)
+        events.Fire('EnemyBirth', enemy)
+
+class EnemySpawnLvl3_3(TriggerZone):
+    def fire(self, firer):
+        if self.fired:
+            return
+
+        self.fired = True
+        enemy = TalkingEnemy()
+        enemy.feetPos = (425, 75)
+        enemy.walkMask = self.level.walkMask
+        enemy.showAvatar(firer)
+        events.Fire('EnemyBirth', enemy)
+
+class EnemySpawnLvl3_4(TriggerZone):
+    def fire(self, firer):
+        if self.fired:
+            return
+
+        self.fired = True
+        enemy = TalkingEnemy()
+        enemy.feetPos = (1425, 388)
+        enemy.walkMask = self.level.walkMask
+        enemy.showAvatar(firer)
+        events.Fire('EnemyBirth', enemy)
+
+class EnemySpawnLvl3_5(TriggerZone):
+    def fire(self, firer):
+        if self.fired:
+            return
+
+        self.fired = True
+        enemy = TalkingEnemy()
+        enemy.feetPos = (1485, 388)
+        enemy.walkMask = self.level.walkMask
+        enemy.showAvatar(firer)
+        events.Fire('EnemyBirth', enemy)
+
+class EnemySpawnLvl3_6(TriggerZone):
+    def fire(self, firer):
+        if self.fired:
+            return
+
+        self.fired = True
+        enemy = TalkingEnemy()
+        enemy.feetPos = (1820, 400)
+        enemy.walkMask = self.level.walkMask
+        enemy.showAvatar(firer)
+        events.Fire('EnemyBirth', enemy)
+
+class EnemySpawnLvl3_7(TriggerZone):
+    def fire(self, firer):
+        if self.fired:
+            return
+
+        self.fired = True
+        enemy = TalkingEnemy()
+        enemy.feetPos = (1890, 400)
+        enemy.walkMask = self.level.walkMask
+        enemy.showAvatar(firer)
+        events.Fire('EnemyBirth', enemy)
+
+class EnemySpawnLvl3_8(TriggerZone):
+    def fire(self, firer):
+        if self.fired:
+            return
+
+        self.fired = True
+        enemy = TalkingEnemy()
+        enemy.feetPos = (1960, 400)
+        enemy.walkMask = self.level.walkMask
+        enemy.showAvatar(firer)
+        events.Fire('EnemyBirth', enemy)
+
+class EnemySpawnLvl3_9(TriggerZone):
+    def fire(self, firer):
+        if self.fired:
+            return
+
+        self.fired = True
+        enemy = TalkingEnemy()
+        enemy.feetPos = (2280, 5)
+        enemy.walkMask = self.level.walkMask
+        enemy.showAvatar(firer)
+        events.Fire('EnemyBirth', enemy)
+
+class EnemySpawnLvl3_10(TriggerZone):
+    def fire(self, firer):
+        if self.fired:
+            return
+
+        self.fired = True
+        enemy = TalkingEnemy()
+        enemy.feetPos = (2350, 5)
+        enemy.walkMask = self.level.walkMask
+        enemy.showAvatar(firer)
+        events.Fire('EnemyBirth', enemy)
+
+class EnemySpawnLvl3_11(TriggerZone):
+    def fire(self, firer):
+        if self.fired:
+            return
+
+        self.fired = True
+        enemy = TalkingEnemy()
+        enemy.feetPos = (2370, 5)
         enemy.walkMask = self.level.walkMask
         enemy.showAvatar(firer)
         events.Fire('EnemyBirth', enemy)
@@ -252,12 +470,14 @@ class EnergyMeter(object):
             self.yoImgShake = [10,10]
 
 class Level(Scene):
-    def __init__(self, levelNum):
+    def __init__(self, levelNum, sound=True):
+        global soundtrack
         events.AddListener(self)
         self.done = False
         self.levelNum = levelNum
         strLevelNum = '%02d' % levelNum
         #self.bg = data.pngs['levelbg'+strLevelNum+'.png']
+        self.sound = sound
 
         filePath= os.path.join(data.data_dir, 'levelbg%02d-?.png' % levelNum)
         bgPngs = glob.glob(filePath)
@@ -298,9 +518,14 @@ class Level(Scene):
         self.startLoc = [key for key,val in triggers.items()
                         if val == 'start location'][0]
 
+        if levelNum == 1 and self.sound:
+            soundtrack = \
+                queueSoundtrack('8bp077-01-nullsleep-her_lazer_light_eyes.mp3')
+            soundtrack.play()
+
     def getNextScene(self):
         print 'getting next scene for ', self.levelNum
-        nextScene = getLevel(self.levelNum+1)
+        nextScene = getLevel(self.levelNum+1, self.sound)
         nextScene.avatar = self.avatar
         return nextScene
 
@@ -328,6 +553,7 @@ class Level(Scene):
 
     def run(self):
         global _activeLevel
+        global soundtrack
         _activeLevel = self
         self.done = False
         clock.set_fps_limit(60)
@@ -343,6 +569,9 @@ class Level(Scene):
         
         while not self.done:
             timeChange = clock.tick()
+
+            if soundtrack and self.sound:
+                soundtrack.dispatch_events()
 
             events.ConsumeEventQueue()
             win.dispatch_events()
@@ -449,3 +678,12 @@ def renderTriangle():
     glLoadIdentity()
 
     glPopAttrib()
+
+def queueSoundtrack(song):
+    global soundtrack
+    if not soundtrack:
+        soundtrack = media.Player()
+        soundtrack.eos_action = 'loop'
+    soundtrack.queue(media.load(os.path.join(data.data_dir, song)))
+    return soundtrack
+
