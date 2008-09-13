@@ -39,7 +39,6 @@ class Enemy(Walker):
     def Hurt(self, amount):
         self.health -= amount
         if self.health > 0:
-            print 'enemy hurt!'
             print 'switching to state stunned'
             self.stun()
             events.Fire('EnemyHurt', self)
@@ -74,6 +73,8 @@ class Enemy(Walker):
         self.knownAvatars.append(avatar)
 
     def stun(self):
+        if self.state in State.attackingStates:
+            self.attack.end()
         self.state = State.stunned
 
     def unstun(self):

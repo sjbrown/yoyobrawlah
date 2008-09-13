@@ -115,7 +115,8 @@ class YoyoAttack(Attack):
             self.visitedTargets = []
             return
 
-        yoyoExtension = abs(feetPos[0] - yoyo.yoyoX)
+        FUDGEFACTOR=25
+        yoyoExtension = abs(feetPos[0] - yoyo.yoyoX) + FUDGEFACTOR
         for t in target:
             if t in self.visitedTargets:
                 #already hit this guy

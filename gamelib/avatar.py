@@ -69,10 +69,12 @@ class Avatar(Walker):
         return min(self.getStringLength(), 5)
 
     def getStringLength(self):
-        return len(self.strings)
+        #always 1 string inside the yoyo
+        return 1 + len(self.strings)
 
     def pickupString(self):
         self.strings.append(1)
+
     def pickupYoyo(self, yoyo):
         self.yoyo = yoyo
         if yoyo:

@@ -11,6 +11,10 @@ triggers = {
 (505,660,60,20): 'YoyoPickup',
 (585,660,60,20): 'StringPickup',
 (1085,800,60,20): 'StringPickup',
+(1785,900,60,20): 'StringPickup',
+(1855,900,60,20): 'StringPickup',
+(1995,900,60,20): 'StringPickup',
+(1700,640,60,20): 'StringPickup',
 (1810,690,120,130): 'GoalZone',
 (890,760,170,270): 'EnemySpawn2',
 
