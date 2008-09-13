@@ -117,6 +117,7 @@ class Cutscene(Scene):
         strCutsceneNum = '%02d' % self.cutsceneNum
         strFrameNum = '%02d' % self.frameNum
         self.bg = data.pngs['cutscene'+strCutsceneNum+strFrameNum+'.png']
+        self.moving_bg = None
 
         # this is a total hack.  just passing these objects on to the next scene
         self.nextLevelNum = None

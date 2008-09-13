@@ -18,6 +18,7 @@ import enemysprite
 from pyglet.gl import *
 
 import visualeffects
+import soundeffects
 
 from scene import Scene, Cutscene, DeathCutscene
 
@@ -489,6 +490,7 @@ class Level(Scene):
 
         self.walkMask = data.levelMasks[strLevelNum]
         self.visualEffects = visualeffects.EffectManager()
+        self.soundEffects = soundeffects.EffectManager()
         triggers = data.levelTriggers['leveltriggers'+strLevelNum]
 
         if self.levelNum == 1:
