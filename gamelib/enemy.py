@@ -43,11 +43,11 @@ class Enemy(Walker):
     def Hurt(self, amount):
         self.health -= amount
         if self.health > 0:
-            print 'switching to state stunned'
+            #print 'switching to state stunned'
             self.stun()
             events.Fire('EnemyHurt', self)
         else:
-            print 'enemy death!'
+            #print 'enemy death!'
             events.Fire('EnemyDeath', self)
 
     def getCollidableWidth(self):
@@ -82,7 +82,7 @@ class Enemy(Walker):
         self.state = State.stunned
 
     def unstun(self):
-        print 'unstun!'
+        #print 'unstun!'
         self.state = State.fastWalking
         self.stunCounter = 0
 
@@ -117,7 +117,7 @@ class Enemy(Walker):
         for victim, attackAmt in victimsAndAmount:
             power = attackAmt*self.energy
             victim.Hurt(power)
-            print 'Enemy hit victim', timeChange
+            #print 'Enemy hit victim', timeChange
             events.Fire('AttackHit', self.attack, self, victim)
         if (self.attack.state == attStates.attacking and
             not self.desireWithinReach()):
@@ -132,7 +132,7 @@ class Enemy(Walker):
         xdelta = desiredLoc[0] - self.feetPos[0]
         ydelta = desiredLoc[1] - self.feetPos[1]
         if self.desireWithinReach():
-            print 'in position.  starting attack'
+            #print 'in position.  starting attack'
             self.state = State.startingAttack
             self.attack.start()
             return

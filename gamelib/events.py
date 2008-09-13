@@ -58,7 +58,6 @@ def ConsumeEventQueue():
 	while i < len( __eventQueue ):
 		evName, args, kwargs = __eventQueue[i]
 		#log_info( 'firing event' + str( evName ) )
-		print 'number of listeners:', len(__listeners)
 		keys = __listeners.keys()
                 #import gc
 		#sorr = sorted(keys, lambda x,y: cmp(x.__class__.__name__, y.__class__.__name__))

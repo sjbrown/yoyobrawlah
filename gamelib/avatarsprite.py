@@ -56,7 +56,6 @@ class AvatarSprite(pyglet.sprite.Sprite):
     def update(self, timeChange=None):
         self.avatar.update(timeChange)
         if self.done:
-            print '*'*50, 'cleaning up'
             return self.cleanup()
 
         if self.avatar.state == State.attacking:

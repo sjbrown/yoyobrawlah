@@ -214,7 +214,7 @@ class YoyoAttack(Attack):
                 #facing the wrong way
                 continue
             if abs(vDistance) <= yoyoExtension:
-                print 'found a victim', t
+                #print 'found a victim', t
                 self.victimsAndAmounts.append((t,1))
                 self.visitedTargets.append(t)
 
@@ -227,7 +227,7 @@ class YoyoAttack(Attack):
         yoyo.draw()
 
     def instantAttack(self, feetPos, facing, target):
-        print "DONIG INSTANT ATTK"
+        #print "DONIG INSTANT ATTK"
         for t in target:
             vDistance = t.feetPos[0] - feetPos[0]
             if facing * vDistance < 0: #facing the wrong way
