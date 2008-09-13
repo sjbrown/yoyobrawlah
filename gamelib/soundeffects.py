@@ -19,7 +19,7 @@ class EffectManager(object):
         data.mp3s['oww%d.mp3' % randint(1, 2)].play()
 
     def On_ExplosionSpecial(self, pos):
-        pass
+        data.mp3s['explosion.mp3'].play()
 
     def On_WhiffSpecial(self, pos):
         data.mp3s['string-back.mp3'].play()
