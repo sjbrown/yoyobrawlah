@@ -578,6 +578,13 @@ class Level2(Level):
         scene.sound = self.sound
         return scene
 
+class Level5(Level):
+    def getNextScene(self):
+        scene = WinCutscene()
+        scene.nextLevelNum = 1
+        scene.sound = self.sound
+        return scene
+
 def renderTriangle():
     glPushAttrib(GL_ENABLE_BIT)
 

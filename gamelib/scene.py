@@ -165,6 +165,12 @@ class Cutscene(Scene):
             nextScene.sound = self.sound
             return nextScene
 
+class WinCutscene(Cutscene):
+    def __init__(self):
+        Cutscene.__init__(self, 2)
+    def getNextScene(self):
+        return Menu()
+
 class DeathCutscene(Cutscene):
     def __init__(self):
         Cutscene.__init__(self, 99)
