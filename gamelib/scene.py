@@ -63,7 +63,7 @@ class SimpleTextButton:
 
 
 class Menu(Scene):
-    def __init__(self):
+    def __init__(self, sound=True):
         events.AddListener(self)
         self.done = False
         self.bg = data.pngs['menu.png']
@@ -76,6 +76,8 @@ class Menu(Scene):
         self.on_key_press = window.window.event(self.on_key_press)
         self.on_key_release = window.window.event(self.on_key_release)
 
+        self.sound = sound
+
     def on_key_press(self, symbol, modifiers):
         self.keyPress = True
     def on_key_release(self, symbol, modifiers):
@@ -85,13 +87,14 @@ class Menu(Scene):
     def getNextScene(self):
         # avoid circular imports
         import level
-        return level.getLevel(1)
+        return level.getLevel(1, self.sound)
 
 class Cutscene(Scene):
     def __init__(self, cutsceneNum):
         events.AddListener(self)
         self.done = False
         self.cutsceneNum = cutsceneNum
+        self.sound = False
         self.frameNum = 1
         strCutsceneNum = '%02d' % self.cutsceneNum
         strFrameNum = '%02d' % self.frameNum
@@ -125,8 +128,9 @@ class Cutscene(Scene):
         except Exception, ex:
             # passing them on...
             import level
-            nextScene = level.getLevel(self.nextLevelNum)
+            nextScene = level.getLevel(self.nextLevelNum, self.sound)
             nextScene.avatar = self.avatar
+            nextScene.sound = self.sound
             return nextScene
 
 class DeathCutscene(Cutscene):

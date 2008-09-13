@@ -10,11 +10,17 @@ import window
 import scene
 
 
-def main():
-    win = pyglet.window.Window( width=800, height=600 )
+def main(vsync=False, sound=True):
+    if vsync:
+        win = pyglet.window.Window(width=800, height=600)
+    else:
+        win = pyglet.window.Window(width=800, height=600, vsync=0)
+        
     window.setWindow(win)
 
-    menu = scene.Menu()
+    print "sound:",
+    print sound
+    menu = scene.Menu(sound)
     currentScene = menu
 
     #win.push_handlers(pyglet.window.event.WindowEventLogger())
