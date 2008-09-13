@@ -14,7 +14,7 @@ triggers = {
 (1700, 1000,75, 400): 'EnemySpawnLvl4_2',
 (1820,637,80,34): 'YoyoPickup',
 (2046,520,210,50): 'GoalZone',
-(300,800,75,400): 'GoalZone',
+#(300,800,75,400): 'GoalZone',
 
 
 }

@@ -15,7 +15,7 @@ triggers = {
 (1410,670,60,20): 'StringPickup',
 (1440,750,60,20): 'StringPickup',
 (1540,355,60,20): 'StringPickup',
-(300,800,75,400): 'GoalZone',
+#(300,800,75,400): 'GoalZone',
 (3038,800,75,400): 'GoalZone',
 
 }
