@@ -7,16 +7,15 @@
 triggers = {
 
 (200,660): 'start location',
-(366,770,75,210): 'EnemySpawn',
-(505,660,60,20): 'YoyoPickup',
-(585,660,60,20): 'StringPickup',
+(366,1000,75,330): 'EnemySpawnLvl1_1',
+(750,660,60,20): 'StringPickup',
+(750,1000,75,350): 'EnemySpawnLvl1_2',
+(1825,1000,15,550): 'EnemySpawnLvl1_3',
+(1840,1000,15,550): 'EnemySpawnLvl1_4',
 (1085,800,60,20): 'StringPickup',
 (1785,900,60,20): 'StringPickup',
-(1855,900,60,20): 'StringPickup',
-(1995,900,60,20): 'StringPickup',
 (1700,640,60,20): 'StringPickup',
-(1810,690,120,130): 'GoalZone',
-(890,760,170,270): 'EnemySpawn2',
+(3038,1000,75,400): 'GoalZone',
 
 }
 

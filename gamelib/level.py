@@ -53,26 +53,52 @@ class GoalZone(TriggerZone):
         self.fired = True
         events.Fire('LevelCompletedEvent', getActiveLevel())
 
-class EnemySpawn(TriggerZone):
+# XXX - this sucks
+
+class EnemySpawnLvl1_1(TriggerZone):
     def fire(self, firer):
         if self.fired:
             return
 
         self.fired = True
         enemy = TalkingEnemy()
-        enemy.feetPos = self.level.startLoc
+        enemy.feetPos = (200, 248)
         enemy.walkMask = self.level.walkMask
         enemy.showAvatar(firer)
         events.Fire('EnemyBirth', enemy)
 
-class EnemySpawn2(EnemySpawn):
+class EnemySpawnLvl1_2(TriggerZone):
     def fire(self, firer):
         if self.fired:
             return
 
         self.fired = True
         enemy = TalkingEnemy()
-        enemy.feetPos = (1040, 440)
+        enemy.feetPos = (945, 350)
+        enemy.walkMask = self.level.walkMask
+        enemy.showAvatar(firer)
+        events.Fire('EnemyBirth', enemy)
+
+class EnemySpawnLvl1_3(TriggerZone):
+    def fire(self, firer):
+        if self.fired:
+            return
+
+        self.fired = True
+        enemy = TalkingEnemy()
+        enemy.feetPos = (2200, 150)
+        enemy.walkMask = self.level.walkMask
+        enemy.showAvatar(firer)
+        events.Fire('EnemyBirth', enemy)
+
+class EnemySpawnLvl1_4(TriggerZone):
+    def fire(self, firer):
+        if self.fired:
+            return
+
+        self.fired = True
+        enemy = TalkingEnemy()
+        enemy.feetPos = (2200, 275)
         enemy.walkMask = self.level.walkMask
         enemy.showAvatar(firer)
         events.Fire('EnemyBirth', enemy)
