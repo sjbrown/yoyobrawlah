@@ -75,6 +75,7 @@ class PngLoader(DynamicCachingLoader):
 soundPlayer = None
 class OggLoader(DynamicCachingLoader):
         def LoadResource(self, resourceName):
+                global soundPlayer
                 if not soundPlayer:
                         try:
                             soundPlayer = pyglet.media.Player()
@@ -85,6 +86,28 @@ class OggLoader(DynamicCachingLoader):
                 name = os.path.join( data_dir, resourceName )
                 if not name.endswith('.ogg'):
                         name += '.ogg'
+
+                try:
+                    sound = pyglet.media.StaticSource(pyglet.media.load(name))
+                except Exception, ex:
+                    log_info('Could not construct sound Source: %s' % ex)
+                    return
+
+                self._d[resourceName] = sound
+
+class Mp3Loader(DynamicCachingLoader):
+        def LoadResource(self, resourceName):
+                global soundPlayer
+                if not soundPlayer:
+                        try:
+                            soundPlayer = pyglet.media.Player()
+                        except Exception, ex:
+                            log_info('Could not construct sound Player:%s' % ex)
+                            return
+
+                name = os.path.join( data_dir, resourceName )
+                if not name.endswith('.mp3'):
+                        name += '.mp3'
 
                 try:
                     sound = pyglet.media.StaticSource(pyglet.media.load(name))
@@ -110,6 +133,7 @@ class TriggerLoader(DynamicCachingLoader):
                 self._d[resourceName] = glbs['triggers']
 
 oggs = OggLoader()
+mp3s = Mp3Loader()
 pngs = PngLoader()
 levelTriggers = TriggerLoader()
 

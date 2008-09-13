@@ -14,9 +14,9 @@ class EffectManager(object):
     def __init__(self):
         events.AddListener(self)
 
+
     def On_EnemyHurt(self, enemy):
-        print "enemy hurt"
-        pass
+        data.mp3s['oww%d.mp3' % randint(1, 2)].play()
 
     def On_ExplosionSpecial(self, pos):
         pass
