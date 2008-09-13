@@ -125,7 +125,7 @@ def main():
 
     @win.event
     def on_key_press(symbol, modifiers):
-        print 'Flipping', anims
+        #print 'Flipping', anims
         for anim in anims:
             anim.flip()
 

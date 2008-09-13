@@ -32,7 +32,7 @@ class EnemySprite(pyglet.sprite.Sprite):
             self.opacity = 255
 
     def On_LevelCompletedEvent(self, *args):
-        print 'enemy cleanup'
+        #print 'enemy cleanup'
         del self.enemy
         events.RemoveListener(self)
 

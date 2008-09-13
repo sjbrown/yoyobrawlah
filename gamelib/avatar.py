@@ -104,7 +104,7 @@ class Avatar(Walker):
 
     def doAttack(self):
         if not self.selectedAttack:
-            print 'fail no attack slected'
+            #print 'fail no attack slected'
             return
         if self.state == State.stunned:
             self.stunCounter += 0.1
@@ -112,7 +112,7 @@ class Avatar(Walker):
         if self.state == State.attacking:
             # already in the middle of it
             return
-        print 'really attacking', self.selectedAttack
+        #print 'really attacking', self.selectedAttack
         self.state = State.attacking
         self.selectedAttack.wipe()
         self.selectedAttack.start()
@@ -170,8 +170,8 @@ class Avatar(Walker):
             return
         attStates = attacks.State
 
-        print 'va', len(self.selectedAttack.victimsAndAmounts)
-        print 'vt', len(self.selectedAttack.visitedTargets)
+        ##print 'va', len(self.selectedAttack.victimsAndAmounts)
+        #print 'vt', len(self.selectedAttack.visitedTargets)
         self.selectedAttack.update(timeChange, self.feetPos, self.facing,
                                    self.getAttackables(), self.yoyo.gfxYoyo)
         victimsAndAmount = self.selectedAttack.GetVictimsAndAmount()
@@ -243,14 +243,14 @@ class Avatar(Walker):
     def fireTriggers(self):
         #Note : this is the exact object from the level, NOT A COPY
         if not self.triggerZones:
-            print 'no trig zones!'
+            #print 'no trig zones!'
             return
         for zone in self.triggerZones:
             if zone.rect.collidepoint(self.feetPos):
                 zone.fire(self)
 
     def stun(self):
-        print 'Avatar got stunned.  nooooo'
+        #print 'Avatar got stunned.  nooooo'
         self.state = State.stunned
         self.stunCounter = 0.0
 
@@ -263,7 +263,7 @@ class Avatar(Walker):
         # when the events module dispatches its events
         if amount <= 0:
             return #not actually hurt
-        print 'reducing heatlh', self.health
+        #print 'reducing heatlh', self.health
         self.health -= amount
         if self.health == 0 and self.strings:
             self.health = 1

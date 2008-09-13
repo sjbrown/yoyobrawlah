@@ -66,7 +66,7 @@ class GoalZone(TriggerZone):
             return
         TriggerZone.fire(self)
 
-        print "GOOOOOOAL"
+        #print "GOOOOOOAL"
         events.Fire('LevelCompletedEvent', getActiveLevel())
 
 # XXX - this sucks
@@ -420,7 +420,7 @@ class Level(Scene):
 
     def end(self):
         events.RemoveListener(self)
-        print "E"*80, 'end'
+        #print "E"*80, 'end'
         self.done = True
         self.avatar.triggerZones = []
         self.avatar.newLevel()

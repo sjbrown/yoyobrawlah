@@ -58,7 +58,7 @@ class DynamicCachingLoader(dict):
 
 class PngLoader(DynamicCachingLoader):
         def LoadResource(self, resourceName):
-                print pyglet.resource.path
+                #print pyglet.resource.path
                 name = os.path.join( data_dir, resourceName )
                 if not name.endswith('.png'):
                         name += '.png'

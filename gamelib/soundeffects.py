@@ -38,7 +38,7 @@ class EffectManager(object):
         pass
 
     def On_EnemyDeath(self, enemy):
-        print "enemy death"
+        #print "enemy death"
         data.mp3s['death%d.mp3' % randint(1, 2)].play()
         pass
 
