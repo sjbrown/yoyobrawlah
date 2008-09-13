@@ -173,6 +173,37 @@ class EnemySpawnLvl3_3(TriggerZone):
         self.doEnemy(ThrowingKitty, [], (2246, 880-500), firer)
         self.end()
 
+class EnemySpawnLvl4_1(TriggerZone):
+    def fire(self, firer):
+        if self.fired:
+            return
+        TriggerZone.fire(self)
+
+        self.doEnemy(TalkingTeddy, [[]], (650, 880-500), firer)
+        self.doEnemy(ThrowingKitty, [], (650, 880-500), firer)
+        self.doEnemy(TalkingTeddy, [[]], (500, 880-860), firer)
+        self.doEnemy(ThrowingKitty, [], (500, 880-860), firer)
+        self.doEnemy(TalkingTeddy, [[]], (1046, 880-860), firer)
+        self.doEnemy(ThrowingKitty, [], (1046, 880-860), firer)
+        self.doEnemy(TalkingTeddy, [[]], (1246, 880-500), firer)
+        self.doEnemy(ThrowingKitty, [], (1246, 880-500), firer)
+        self.end()
+
+class EnemySpawnLvl4_2(TriggerZone):
+    def fire(self, firer):
+        if self.fired:
+            return
+        TriggerZone.fire(self)
+
+        self.doEnemy(TalkingTeddy, [[]], (2100, 880-860), firer)
+        self.doEnemy(ThrowingKitty, [], (2100, 880-860), firer)
+        self.doEnemy(TalkingTeddy, [[]], (2100, 880-760), firer)
+        self.doEnemy(ThrowingKitty, [], (2100, 880-760), firer)
+        self.doEnemy(TalkingTeddy, [[]], (2100, 880-660), firer)
+        self.doEnemy(ThrowingKitty, [], (2100, 880-660), firer)
+        self.doEnemy(TalkingTeddy, [[]], (2100, 880-560), firer)
+        self.doEnemy(ThrowingKitty, [], (2100, 880-560), firer)
+        self.end()
 
 class TriggerZoneDebugSprite(pyglet.sprite.Sprite):
     def __init__(self, zone):
