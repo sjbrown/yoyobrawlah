@@ -9,8 +9,10 @@ import pyglet
 import window
 import scene
 
+import soundeffects
 
 def main(vsync=False, sound=True):
+    global visualEffects
     if vsync:
         win = pyglet.window.Window(width=800, height=600)
     else:
@@ -18,12 +20,12 @@ def main(vsync=False, sound=True):
         
     window.setWindow(win)
 
-    print "sound:",
-    print sound
     menu = scene.Menu(sound)
     currentScene = menu
 
     #win.push_handlers(pyglet.window.event.WindowEventLogger())
+
+    soundEffects = soundeffects.EffectManager()
 
     while currentScene and not win.has_exit:
         currentScene = currentScene.run()

@@ -18,8 +18,10 @@ import enemysprite
 from pyglet.gl import *
 
 import visualeffects
+import soundeffects
 
 from scene import Scene, Cutscene, DeathCutscene
+import main
 
 DEBUG = True
 soundtrack = None
@@ -341,7 +343,6 @@ class Level(Scene):
         bgPngs = glob.glob(filePath)
         bgPngs.sort()
         self.bgImages = [data.pngs[png] for png in bgPngs]
-
 
         if self.levelNum == 1:
             self.avatar = Avatar()

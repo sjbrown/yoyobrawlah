@@ -3,6 +3,7 @@
 import pyglet
 from pyglet import clock
 from pyglet import font
+from pyglet.gl import *
 from util import Rect
 import window
 import data
@@ -11,11 +12,14 @@ import events
 class Scene(object):
     def __init__(self):
         self.done = False
+        self.moving_bg = None
 
     def run(self):
         self.done = False
         clock.set_fps_limit(40)
         win = window.window
+
+        xPos = 0
 
         while not self.done:
             timeChange = clock.tick()
@@ -28,10 +32,23 @@ class Scene(object):
             if self.done or win.has_exit:
                 break
 
+            glEnable(GL_BLEND)
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+            glColor4f(0.65, 0.65, 0.65, 1)
+
+            if self.moving_bg:
+                for count, bbg in enumerate(self.moving_bg):
+                    bbg.blit(count * 800 + xPos, 0)
+
+            glColor4f(1, 1, 1, 1)
             self.bg.blit(0,0)
             for miscSprite in self.miscSprites:
                 miscSprite.draw()
             win.flip()
+
+            xPos -= 1
+            if xPos == -800:
+                xPos = 0
 
         return self.getNextScene()
 
@@ -70,9 +87,10 @@ class Menu(Scene):
         events.AddListener(self)
         self.done = False
         self.bg = data.pngs['menu.png']
+        self.moving_bg = [data.pngs['menu-bricks.png'],
+                          data.pngs['menu-bricks.png']]
         self.miscSprites = [
             SimpleTextButton('Start!', 400, 200, True),
-            #SimpleTextButton('Full Screen', 400, 150, False)
         ]
 
         self.keyPress = False
@@ -111,6 +129,7 @@ class Cutscene(Scene):
         strCutsceneNum = '%02d' % self.cutsceneNum
         strFrameNum = '%02d' % self.frameNum
         self.bg = data.pngs['cutscene'+strCutsceneNum+strFrameNum+'.png']
+        self.moving_bg = None
 
         # this is a total hack.  just passing these objects on to the next scene
         self.nextLevelNum = None
