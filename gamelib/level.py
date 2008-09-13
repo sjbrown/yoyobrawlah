@@ -11,8 +11,8 @@ import os.path
 
 from avatar import Avatar, LogicalYoyo
 from avatarsprite import AvatarSprite
-from enemy import Enemy, TalkingEnemy
-from enemysprite import TeddySprite
+from enemy import Enemy, TalkingEnemy, TalkingKitty, Speeches, ThrowingKitty
+import enemysprite
 
 from pyglet.gl import *
 
@@ -73,7 +73,8 @@ class EnemySpawnLvl1_2(TriggerZone):
             return
 
         self.fired = True
-        enemy = TalkingEnemy()
+        #enemy = TalkingKitty(Speeches.hugs)
+        enemy = ThrowingKitty()
         enemy.feetPos = (945, 350)
         enemy.walkMask = self.level.walkMask
         enemy.showAvatar(firer)
@@ -407,7 +408,8 @@ class Level(Scene):
 
     def On_EnemyBirth(self, enemy):
         print 'handling enemy birth'
-        enemySprite = TeddySprite(enemy)
+        cls = getattr(enemysprite, enemy.spriteClass)
+        enemySprite = cls(enemy)
         self.enemySprites[enemy] = enemySprite
 
     def On_EnemyDeath(self, enemy):

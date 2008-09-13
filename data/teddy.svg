@@ -32,9 +32,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="4"
-     inkscape:cx="464.30095"
-     inkscape:cy="544.35514"
+     inkscape:zoom="1"
+     inkscape:cx="192.02518"
+     inkscape:cy="371.14505"
      inkscape:current-layer="layer1"
      inkscape:document-units="px"
      showgrid="false"
@@ -428,30 +428,6 @@
        inkscape:export-filename="/Users/patrick/char3_fr_0.png"
        inkscape:export-xdpi="25.670366"
        inkscape:export-ydpi="25.670366" />
-    <rect
-       style="opacity:1;fill:#ffffff;fill-opacity:0;stroke:#000000;stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       id="rect3476"
-       width="63.879498"
-       height="74.416321"
-       x="315.39468"
-       y="137"
-       rx="5.2246718"
-       ry="5.3330975"
-       inkscape:export-filename="C:\Documents and Settings\Lydia\Desktop\subWalkSquash3.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90" />
-    <rect
-       style="opacity:1;fill:#ffffff;fill-opacity:0;stroke:#000000;stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       id="rect3478"
-       width="63.879498"
-       height="74.416321"
-       x="237.89468"
-       y="140.5"
-       rx="5.2246718"
-       ry="5.3330975"
-       inkscape:export-filename="C:\Documents and Settings\Lydia\Desktop\subWalkSquash2.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90" />
     <rect
        inkscape:export-ydpi="90"
        inkscape:export-xdpi="90"
@@ -1945,14 +1921,16 @@
        inkscape:transform-center-y="-31.320785" />
     <path
        style="fill:#72583a;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-miterlimit:4;stroke-dashoffset:0;stroke-opacity:1"
-       d="M 78.600475,167.02041 C 77.365813,165.70211 75.806087,165.81863 74.775157,166.77288 C 73.871034,167.63797 73.55372,169.27878 73.135797,170.70522 C 72.588399,173.22734 72.137141,175.82099 71.51519,178.28809 C 71.06278,179.97063 70.556607,181.60816 69.934357,183.13544 C 69.391273,184.70166 68.674933,186.09066 68.00074,187.51438 C 66.318864,190.49445 64.372052,193.10292 62.513735,195.83225 C 62.04406,196.54918 61.426122,197.21847 61.46061,198.41196 C 61.35191,199.69596 61.812704,201.22164 62.664839,202.03475 C 63.656438,203.22465 64.892545,203.57488 66.025979,203.83727 C 66.870817,203.95667 67.704538,203.79039 68.457084,203.44753 C 69.254094,203.10947 69.896467,202.37222 70.602753,201.80948 C 72.422083,200.1252 74.138396,198.23771 75.772524,196.22016 C 77.481688,194.09974 78.911907,191.53699 80.049618,188.6726 C 80.781975,186.60783 81.493157,184.49066 81.855258,182.12986 C 82.228552,179.29525 82.597919,176.28565 81.903191,173.17888 C 81.580035,171.46788 80.856882,169.85262 79.971018,168.52322 C 79.553268,167.95101 79.092663,167.41832 78.600475,167.02041 z"
-       id="path3657" />
+       d="M 78.600475,167.02041 C 77.365813,165.70211 75.806087,165.81863 74.775157,166.77288 C 73.871034,167.63797 73.55372,169.27878 73.135797,170.70522 C 77.025899,175.41484 72.137141,175.82099 71.51519,178.28809 C 71.06278,179.97063 70.556607,181.60816 69.934357,183.13544 C 69.391273,184.70166 68.674933,186.09066 68.00074,187.51438 C 66.318864,190.49445 64.372052,193.10292 62.513735,195.83225 C 62.04406,196.54918 61.426122,197.21847 61.46061,198.41196 C 61.35191,199.69596 61.812704,201.22164 62.664839,202.03475 C 63.656438,203.22465 64.892545,203.57488 66.025979,203.83727 C 66.870817,203.95667 67.704538,203.79039 68.457084,203.44753 C 69.254094,203.10947 69.896467,202.37222 70.602753,201.80948 C 72.422083,200.1252 74.138396,198.23771 75.772524,196.22016 C 77.481688,194.09974 78.911907,191.53699 80.049618,188.6726 C 80.781975,186.60783 81.493157,184.49066 81.855258,182.12986 C 82.228552,179.29525 82.597919,176.28565 81.903191,173.17888 C 81.580035,171.46788 80.856882,169.85262 79.971018,168.52322 C 79.553268,167.95101 79.092663,167.41832 78.600475,167.02041 z"
+       id="path3657"
+       sodipodi:nodetypes="cccccccccccccccccc" />
     <path
        style="fill:#72583a;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-miterlimit:4;stroke-dashoffset:0;stroke-opacity:1"
-       d="M 77.641986,175.81504 C 76.712974,175.06568 75.520286,174.7839 74.480853,174.22884 C 73.384134,173.96589 72.271501,174.47376 71.438845,175.16578 C 69.791424,176.54869 69.097644,178.66186 68.174853,180.53416 C 67.395553,182.07688 66.705957,183.81408 66.963938,185.57199 C 67.115124,186.69513 67.80157,187.80628 68.926137,188.15787 C 70.051753,188.7081 71.295161,189.47655 72.589311,189.03596 C 74.051899,188.5676 75.028916,187.26621 75.809997,186.01597 C 76.645197,184.29157 77.454485,182.54853 78.216594,180.79259 C 78.739902,179.17141 78.855071,177.16726 77.641986,175.81504 z"
+       d="M 77.641986,175.81504 C 76.712974,175.06568 75.707786,174.8464 74.668353,174.29134 C 73.259134,174.52839 72.271501,174.47376 71.438845,175.16578 C 69.791424,176.54869 69.097644,178.66186 68.174853,180.53416 C 67.395553,182.07688 66.705957,183.81408 66.963938,185.57199 C 67.115124,186.69513 67.80157,187.80628 68.926137,188.15787 C 70.051753,188.7081 71.295161,189.47655 72.589311,189.03596 C 74.051899,188.5676 75.028916,187.26621 75.809997,186.01597 C 76.645197,184.29157 77.454485,182.54853 78.216594,180.79259 C 78.739902,179.17141 78.855071,177.16726 77.641986,175.81504 z"
        id="path3659"
        inkscape:transform-center-y="0.58692975"
-       inkscape:transform-center-x="4.2062618" />
+       inkscape:transform-center-x="4.2062618"
+       sodipodi:nodetypes="cccccccccc" />
     <path
        sodipodi:type="arc"
        style="opacity:1;fill:#e19e2a;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
@@ -2555,5 +2533,77 @@
        inkscape:export-filename="C:\Documents and Settings\Lydia\Desktop\Avatars\Teddy\tedStun02.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
+    <rect
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="C:\Documents and Settings\Lydia\Desktop\Avatars\Teddy\tedDead.png"
+       ry="0"
+       rx="6.5158386"
+       y="144.45906"
+       x="17.459076"
+       height="67.081886"
+       width="81.331886"
+       id="rect3809"
+       style="opacity:1;fill:#ffffff;fill-opacity:0;stroke:#000000;stroke-width:0;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+    <rect
+       style="opacity:1;fill:#ffffff;fill-opacity:0;stroke:#000000;stroke-width:0;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect3811"
+       width="65.331886"
+       height="80.581886"
+       x="159.45908"
+       y="132.45906"
+       rx="5.2340117"
+       ry="0"
+       inkscape:export-filename="C:\Documents and Settings\Lydia\Desktop\Avatars\Teddy\tedWalk01.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <rect
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="C:\Documents and Settings\Lydia\Desktop\Avatars\Teddy\tedWalk02.png"
+       ry="0"
+       rx="5.2340117"
+       y="132.45906"
+       x="237.95908"
+       height="80.581886"
+       width="65.331886"
+       id="rect3821"
+       style="opacity:1;fill:#ffffff;fill-opacity:0;stroke:#000000;stroke-width:0;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+    <rect
+       style="opacity:1;fill:#ffffff;fill-opacity:0;stroke:#000000;stroke-width:0;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect3823"
+       width="65.331886"
+       height="80.581886"
+       x="314.45908"
+       y="130.45906"
+       rx="5.2340117"
+       ry="0"
+       inkscape:export-filename="C:\Documents and Settings\Lydia\Desktop\Avatars\Teddy\tedWalk03.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <rect
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="C:\Documents and Settings\Lydia\Desktop\Avatars\Teddy\tedWalk05.png"
+       ry="0"
+       rx="5.2340117"
+       y="130.95906"
+       x="391.45908"
+       height="80.581886"
+       width="65.331886"
+       id="rect3825"
+       style="opacity:1;fill:#ffffff;fill-opacity:0;stroke:#000000;stroke-width:0;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+    <rect
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="C:\Documents and Settings\Lydia\Desktop\Avatars\Teddy\tedBrokenHeart.png"
+       ry="0"
+       rx="3.3613422"
+       y="49.209057"
+       x="576.83411"
+       height="33.206886"
+       width="41.956886"
+       id="rect3827"
+       style="opacity:1;fill:#ffffff;fill-opacity:0;stroke:#000000;stroke-width:0;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
   </g>
 </svg>

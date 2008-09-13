@@ -4,7 +4,8 @@ import pyglet
 import window
 import data
 import events
-from util import ShadowSprite
+from enemy import State
+from util import ShadowSprite, Facing
 from animation import Anim
 
 from pyglet.gl import *
@@ -34,11 +35,13 @@ class EnemySprite(pyglet.sprite.Sprite):
         if victim == self.enemy:
             self.blinkingCounter = 0.5
 
+
 class TeddySprite(EnemySprite):
+    imgPrefix = 'ted'
     def __init__(self, enemy):
         self.enemy = enemy
         events.AddListener(self)
-        self.currentAnim = Anim('tedWalk', 5)
+        self.currentAnim = Anim(self.imgPrefix+'Walk', 5)
         #img = data.pngs['enemy.png']
         pyglet.sprite.Sprite.__init__(self, self.currentAnim.animation, 0, 0)
         self.blinkingCounter = 0.0
@@ -47,14 +50,35 @@ class TeddySprite(EnemySprite):
         self.shadow.scale = float(self.width)/self.shadow.width
         self.shadow.opacity = 100
 
+        self.hugImgs = {Facing.left: data.pngs[self.imgPrefix+'Hug_left'],
+                        Facing.right: data.pngs[self.imgPrefix+'Hug']}
+        self.walkImg = self.currentAnim.animation
+
     def draw(self):
         self.shadow.draw()
-        self.color = (200, 10, 10)
+        if hasattr(self.enemy, 'mad') and self.enemy.mad:
+            self.color = (200, 10, 10)
         EnemySprite.draw(self)
 
     def update(self, timeChange=None):
         EnemySprite.update(self, timeChange)
+        if self.enemy.state in State.walkingStates:
+            if self.enemy.facing != self.currentAnim.facing:
+                self.currentAnim.flip()
+                self.image = self.currentAnim.animation
+            elif self.image != self.currentAnim.animation:
+                self.image = self.currentAnim.animation
+        elif self.enemy.state in State.attackingStates:
+            self.image = self.hugImgs[self.enemy.facing]
         self.shadow.x = self.x
         self.shadow.y = self.y - (self.shadow.height/2) #shadow center = feetpos
 
 
+class KittySprite(TeddySprite):
+    imgPrefix = 'kit'
+
+class ThrowingKittySprite(KittySprite):
+    def draw(self):
+        if self.enemy.attack.knifeSprite:
+            self.enemy.attack.knifeSprite.draw()
+        KittySprite.draw(self)
