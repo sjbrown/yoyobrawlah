@@ -18,7 +18,7 @@ class EffectManager(object):
         events.AddListener(self)
         self.speechBubbles = {}
 
-    def splatter(self, enemy):
+    def On_EnemyHurt(self, enemy):
         pos = list(enemy.feetPos)
         pos[0] += window.bgOffset[0]
         pos[1] += window.bgOffset[1]
@@ -29,9 +29,25 @@ class EffectManager(object):
                                                        randint(-2, 3)))
             self.sprites.append(bl)
 
-    def On_EnemyHurt(self, enemy):
-        print 'enemy hurt'
-        self.splatter(enemy)
+    def On_ExplosionSpecial(self, pos):
+        print 'splode'
+        pos = list(pos)
+        pos[0] += window.bgOffset[0]
+        pos[1] += window.bgOffset[1]
+        for drop in range(0, randint(4, 8)):
+            vector = euclid.Vector2(randint(-2,3), randint(-2,3))
+            fb = Fireball(pos, vector)
+            self.sprites.append(fb)
+
+    def On_WhiffSpecial(self, pos):
+        print 'whiff'
+        pos = list(pos)
+        pos[0] += window.bgOffset[0]
+        pos[1] += window.bgOffset[1]
+        for drop in range(0, randint(5, 8)):
+            vector = euclid.Vector2(randint(-2,3), randint(-2,3))
+            puff = Puff(pos, vector)
+            self.sprites.append(puff)
 
     def On_SpriteRemove(self, sprite):
         if sprite in self.sprites:
@@ -108,6 +124,8 @@ class HeartFloaty(pyglet.sprite.Sprite):
         if self.opacity < 80:
             events.Fire('SpriteRemove', self)
 
+
+
 class Blood(object):
     pink = (220, 0, 0)
     red = (255, 0, 0)
@@ -148,6 +166,37 @@ class Blood(object):
         glLoadIdentity()
 
         glColor3ub(255,255,255)
+        glPopAttrib()
+
+class Puff(Blood):
+    pink = (250, 200, 200)
+    red = (255, 250, 200)
+    lightred = (240, 255, 255)
+    colors = [pink, red, lightred]
+    lifetimeRange = (1, 2)
+    left = euclid.Vector2(-2, 0)
+
+
+class Fireball(Blood):
+    pink = (250, 200, 200, 128)
+    red = (255, 25, 20, 128)
+    lightred = (240, 255, 25, 128)
+    colors = [pink, red, lightred]
+    lifetimeRange = (3, 3)
+
+    def draw(self):
+        glPushAttrib(GL_ENABLE_BIT)
+
+        glColor4ub(*self.color)
+        gluQuadricDrawStyle(self.quad, GLU_FILL)
+
+        glLoadIdentity()
+        glTranslatef(self.position.x, self.position.y, 0)
+
+        gluDisk(self.quad, 0, 6, 50, 1)
+        glLoadIdentity()
+
+        glColor4ub(255,255,255,255)
         glPopAttrib()
 
 

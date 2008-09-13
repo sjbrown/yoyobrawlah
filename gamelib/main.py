@@ -14,7 +14,8 @@ def main():
     win = pyglet.window.Window( width=800, height=600 )
     window.setWindow(win)
 
-    currentScene = scene.Menu()
+    menu = scene.Menu()
+    currentScene = menu
 
     #win.push_handlers(pyglet.window.event.WindowEventLogger())
 

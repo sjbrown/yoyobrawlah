@@ -111,6 +111,7 @@ class AvatarSprite(pyglet.sprite.Sprite):
 
         if symbol == key.LCTRL and self.yoyo.moveType:
             self.yoyo.yoyoReturn = True
+            self.avatar.fireSpecial()
 
         moveDict = {
             key.UP: self.avatar.On_UpKeyRelease,

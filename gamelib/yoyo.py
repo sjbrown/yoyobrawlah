@@ -121,7 +121,8 @@ class YoYo:
                 self.yoyoX += x
                 self.yoyoY += y
             else:
-                print "end of rope"
+                pass
+                #print "end of rope"
         else:
             self._yoyoReturn(tick)  
 

@@ -1,5 +1,6 @@
 #! /usr/bin/python
 
+import math
 import pyglet
 import events
 from walker import Walker
@@ -56,11 +57,8 @@ class Avatar(Walker):
         self.yMax = 2
         self.yMin = -2
         self.stunCounter = 0
-        self.yoyo = None
-        self.attacks = {'looping':None,
-                        'walkthedog':None,
-                        'shootthemoon':None,
-                       }
+        self.yoyo = LogicalYoyo()
+        self.attacks = attacks.makeYoyoAttacks(self.yoyo)
         self.strings = []
         self.selectedAttack = None
 
@@ -140,7 +138,7 @@ class Avatar(Walker):
             
     def update(self, timeChange=None):
         if self.state == State.normal:
-            #self.update_endAttack(timeChange)
+            self.update_endAttack(timeChange)
             return self.update_walk(timeChange)
         elif self.state == State.stunned:
             #self.update_endAttack(timeChange)
@@ -150,6 +148,9 @@ class Avatar(Walker):
             return self.update_attack(timeChange)
 
     def update_attack(self, timeChange):
+        if not self.yoyo.gfxYoyo:
+            # todo this is a hack fix
+            return
         attStates = attacks.State
 
         self.selectedAttack.update(timeChange, self.feetPos, self.facing,
@@ -158,10 +159,28 @@ class Avatar(Walker):
         for victim, attackAmt in victimsAndAmount:
             power = attackAmt*self.getEnergy()
             victim.Hurt(power)
-            print 'Avatar hit victim', power
             events.Fire('AttackHit', self.selectedAttack, self, victim)
         if self.selectedAttack.state == attStates.done:
             self.state = State.normal
+
+    def fireSpecial(self):
+        if not self.yoyo:
+            return
+        x = self.yoyo.gfxYoyo.yoyoX
+        y = self.yoyo.gfxYoyo.yoyoY
+        if self.getStringLength() <= 5:
+            events.Fire('WhiffSpecial', (x,y))
+        else:
+            events.Fire('ExplosionSpecial', (x,y))
+            self.strings.pop()
+            #todo: move this into ExplosionAttack
+            targets = self.getAttackables()
+            for t in targets:
+                xdistance = abs(t.feetPos[0] - x)
+                ydistance = abs(t.feetPos[1] - y)
+                if math.sqrt(xdistance**2 + ydistance**2) < 150:
+                    t.Hurt(self.getEnergy())
+                    events.Fire('AttackHit', attacks.ExplosionAttack(), self, t)
 
     def update_endAttack(self, timeChange):
         if ( self.selectedAttack and
@@ -240,3 +259,4 @@ class Avatar(Walker):
 class LogicalYoyo(object):
     def __init__(self):
         self.stringLength = 120
+        self.gfxYoyo = None

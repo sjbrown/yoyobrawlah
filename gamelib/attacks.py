@@ -80,6 +80,9 @@ class Hug(Attack):
         self.victimsAndAmounts.append((target,0))
             
 
+class ExplosionAttack(Attack):
+    pass
+
 class YoyoAttack(Attack):
     startDuration = 0
     attackDuration = 0.3

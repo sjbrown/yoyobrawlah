@@ -101,4 +101,6 @@ TriggerZoneRemove
 StartSpeech
 SpeechPart
 StopSpeech
+WhiffSpecial
+ExplosionSpecial
 '''.strip().split()

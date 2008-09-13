@@ -191,6 +191,7 @@ class EnergyMeter(object):
         self.pos = pos
         self.yoImg = YoyoHud()
         self.yoImgShake = [0,0]
+        self.pulse = 0
 
     def draw(self, avatar):
         x = self.pos[0]
@@ -208,6 +209,11 @@ class EnergyMeter(object):
         x += 30
         for i in range(avatar.getStringLength()):
             stringImg = StringHud()
+            if i > 4:
+                # more than 5 strings are volatile
+                self.pulse += 10
+                self.pulse %= 256
+                stringImg.opacity = self.pulse
             stringImg.x = x - (i*2)
             stringImg.y = self.pos[1]
             stringImg.draw()
