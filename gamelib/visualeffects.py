@@ -33,7 +33,7 @@ class EffectManager(object):
     def On_ExplosionSpecial(self, pos):
         print 'splode'
         pos = toScreenPos(pos)
-        for drop in range(0, randint(4, 8)):
+        for drop in range(0, randint(2, 4)):
             vector = euclid.Vector2(randint(-2,3), randint(-2,3))
             fb = Fireball(pos, vector)
             self.sprites.append(fb)
@@ -215,27 +215,46 @@ class Puff(Blood):
 
 
 class Fireball(Blood):
-    pink = (250, 200, 200, 128)
+    pink = (250, 200, 200, 10)
     red = (255, 25, 20, 128)
-    lightred = (240, 255, 25, 128)
+    lightred = (240, 255, 25, 10)
     colors = [pink, red, lightred]
     lifetimeRange = (3, 3)
 
+    def __init__(self, position, velocity):
+        self.color = random.choice(self.colors)
+        self.lifetime = 0.5
+        self.quad = gluNewQuadric()
+
+        varianceX = random.randint(-3,3)
+        varianceY = random.randint(-3,3)
+        self.position = [position[0]+varianceX, position[1]+varianceY]
+        self.velocity = velocity
+        self.outTick = 22
+        self.innerTick = 0
+
     def draw(self):
+        self.outTick += 1
+        self.innerTick += 30
+        inner = self.outTick * (float(self.innerTick)/(self.outTick+self.innerTick))
         glPushAttrib(GL_ENABLE_BIT)
 
         glColor4ub(*self.color)
         gluQuadricDrawStyle(self.quad, GLU_FILL)
 
         glLoadIdentity()
-        glTranslatef(self.position.x, self.position.y, 0)
+        glTranslatef(self.position[0], self.position[1], 0)
 
-        gluDisk(self.quad, 0, 6, 50, 1)
+        gluDisk(self.quad, inner, self.outTick, 50, 1)
         glLoadIdentity()
 
         glColor4ub(255,255,255,255)
         glPopAttrib()
 
+    def update(self, tick):
+        self.lifetime -= tick
+        if self.lifetime <= 0:
+            self.die()
 
 if __name__ == '__main__':
     from pyglet import window

@@ -160,7 +160,7 @@ class YoyoPickup(TriggerZone):
         if not isinstance(firer, Avatar):
             return
 
-        print 'yoyo pickup!'
+        ##print 'yoyo pickup!'
 
         self.fired = True
         yoyo = LogicalYoyo()
@@ -177,7 +177,7 @@ class StringPickup(TriggerZone):
             return
         if not isinstance(firer, Avatar):
             return
-        print 'string pickup!'
+        #print 'string pickup!'
         self.fired = True
         firer.pickupString()
         events.Fire('TriggerZoneRemove', self)
@@ -302,7 +302,7 @@ class Level(Scene):
                         if val == 'start location'][0]
 
     def getNextScene(self):
-        print 'getting next scene for ', self.levelNum
+        #print 'getting next scene for ', self.levelNum
         nextScene = getLevel(self.levelNum+1)
         nextScene.avatar = self.avatar
         return nextScene
@@ -424,7 +424,7 @@ class Level(Scene):
         self.getNextScene = getNextScene
 
     def On_EnemyBirth(self, enemy):
-        print 'handling enemy birth'
+        #print 'handling enemy birth'
         cls = getattr(enemysprite, enemy.spriteClass)
         enemySprite = cls(enemy)
         self.enemySprites[enemy] = enemySprite
