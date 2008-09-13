@@ -166,6 +166,9 @@ class Avatar(Walker):
     def fireSpecial(self):
         if not self.yoyo:
             return
+        if not self.yoyo.gfxYoyo:
+            # hack hack todo
+            return
         x = self.yoyo.gfxYoyo.yoyoX
         y = self.yoyo.gfxYoyo.yoyoY
         if self.getStringLength() <= 5:
