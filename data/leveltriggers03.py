@@ -19,7 +19,7 @@ triggers = {
 (920,500,60,20): 'StringPickup',
 (1820,620,80,34): 'YoyoPickup',
 (2046,420,210,50): 'GoalZone',
-(300,800,75,400): 'GoalZone',
+#(300,800,75,400): 'GoalZone',
 
 
 (2730,800,60,20): 'StringPickup',

@@ -13,7 +13,7 @@ triggers = {
 (2340,800,15,650): 'EnemySpawnLvl2_3',
 (2260,380,60,20): 'StringPickup',
 (3038,800,75,400): 'GoalZone',
-(300,800,75,400): 'GoalZone',
+#(300,800,75,400): 'GoalZone',
 
 
 }

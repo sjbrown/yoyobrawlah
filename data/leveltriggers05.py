@@ -20,7 +20,7 @@ triggers = {
 (608,744,10,210): 'EnemySpawnLvl3_9',
 (618,744,10,210): 'EnemySpawnLvl3_10',
 (638,744,10,210): 'EnemySpawnLvl3_11',
-
+(2600, 560, 50, 100): 'GoalZone' 
 }
 
 def rewriteToCartesian():
