@@ -19,6 +19,7 @@ keysPressed = {}
 
 class AvatarSprite(pyglet.sprite.Sprite):
     def __init__(self, avatar):
+        self.done = False
         self.avatar = avatar
         self.currentAnim = Anim('subWalkSquash', 5)
         #img = data.pngs['avatar.png']
@@ -38,8 +39,6 @@ class AvatarSprite(pyglet.sprite.Sprite):
         self.on_mouse_press = window.window.event(self.on_mouse_press)
         self.on_mouse_release = window.window.event(self.on_mouse_release)
 
-
-
         self.attackImgs = {Facing.left: data.pngs[self.avatar.attackImg +'_left'],
                            Facing.right: data.pngs[self.avatar.attackImg]}
         self.deadImgs = {Facing.left: data.pngs[self.avatar.deadImg +'_left'],
@@ -56,6 +55,9 @@ class AvatarSprite(pyglet.sprite.Sprite):
 
     def update(self, timeChange=None):
         self.avatar.update(timeChange)
+        if self.done:
+            print '*'*50, 'cleaning up'
+            return self.cleanup()
 
         if self.avatar.state == State.attacking:
             self.image = self.attackImgs[self.avatar.facing]
@@ -98,6 +100,24 @@ class AvatarSprite(pyglet.sprite.Sprite):
     def On_AttackHit(self, attack, attacker, victim):
         if victim == self.avatar:
             self.blinkingCounter = 1.0
+
+    def On_LevelCompletedEvent(self, *args):
+        # clean up
+        self.done = True
+
+    def cleanup():
+        events.RemoveListener(self)
+        del self.avatar
+        del self.currentAnim
+        del self.yoyo
+        del self.shadow
+        del self.mouseButton
+        del self.attackImgs
+        del self.deadImgs
+        del self.on_key_press
+        del self.on_key_release
+        del self.on_mouse_press
+        del self.on_mouse_release
 
     def press(self):
         from pyglet.window import key

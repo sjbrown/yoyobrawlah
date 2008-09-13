@@ -420,6 +420,7 @@ class Level(Scene):
 
     def end(self):
         events.RemoveListener(self)
+        print "E"*80, 'end'
         self.done = True
         self.avatar.triggerZones = []
         self.avatar.newLevel()
