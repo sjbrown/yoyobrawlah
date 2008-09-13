@@ -34,6 +34,11 @@ class AvatarSprite(pyglet.sprite.Sprite):
 
         self.on_key_press = window.window.event(self.on_key_press)
         self.on_key_release = window.window.event(self.on_key_release)
+        self.mouseButton = None
+        self.on_mouse_press = window.window.event(self.on_mouse_press)
+        self.on_mouse_release = window.window.event(self.on_mouse_release)
+
+
 
         self.attackImgs = {Facing.left: data.pngs[self.avatar.attackImg +'_left'],
                            Facing.right: data.pngs[self.avatar.attackImg]}
@@ -94,6 +99,18 @@ class AvatarSprite(pyglet.sprite.Sprite):
         if victim == self.avatar:
             self.blinkingCounter = 1.0
 
+    def press(self):
+        from pyglet.window import key
+        if keysPressed.get(key.DOWN):
+            self.yoyo.throw('walkthedog')
+            self.avatar.setAttack('walkthedog')
+        elif keysPressed.get(key.UP):
+            self.yoyo.throw('shootthemoon')
+            self.avatar.setAttack('shootthemoon')
+        else:
+            self.yoyo.throw('looping')
+            self.avatar.setAttack('looping')
+        self.avatar.doAttack()
         
     def on_key_press(self, symbol, modifiers):
         if self.avatar.health == 0:
@@ -102,24 +119,19 @@ class AvatarSprite(pyglet.sprite.Sprite):
         from pyglet.window import key
         keysPressed[symbol] = True
 
-        if keysPressed.get(key.LCTRL):
-        #if symbol == key.LCTRL:
-            if keysPressed.get(key.DOWN):
-                self.yoyo.throw('walkthedog')
-                self.avatar.setAttack('walkthedog')
-            elif keysPressed.get(key.UP):
-                self.yoyo.throw('shootthemoon')
-                self.avatar.setAttack('shootthemoon')
-            else:
-                self.yoyo.throw('looping')
-                self.avatar.setAttack('looping')
-            self.avatar.doAttack()
+        if (keysPressed.get(key.LCTRL) or
+            keysPressed.get(key.SPACE)):
+            self.press()
         else:
             moveDict = {
                 key.UP: self.avatar.On_UpKeyPress,
+                key.W: self.avatar.On_UpKeyPress,
                 key.RIGHT: self.avatar.On_RightKeyPress,
+                key.D: self.avatar.On_RightKeyPress,
                 key.DOWN: self.avatar.On_DownKeyPress,
+                key.S: self.avatar.On_DownKeyPress,
                 key.LEFT: self.avatar.On_LeftKeyPress,
+                key.A: self.avatar.On_DownKeyPress,
                 }
             fn = moveDict.get(symbol)
             if fn:
@@ -130,24 +142,37 @@ class AvatarSprite(pyglet.sprite.Sprite):
                     #self.currentAnim.flip()
 
 
+    def release(self):
+        self.yoyo.yoyoReturn = True
+        self.avatar.fireSpecial()
+
     def on_key_release(self, symbol, modifiers):
         from pyglet.window import key
         keysPressed[symbol] = False
 
-        if symbol == key.LCTRL and self.yoyo.moveType:
-            self.yoyo.yoyoReturn = True
-            self.avatar.fireSpecial()
+        if symbol in [key.LCTRL,key.SPACE] and self.yoyo.moveType:
+            self.release()
 
         moveDict = {
             key.UP: self.avatar.On_UpKeyRelease,
+            key.W: self.avatar.On_UpKeyRelease,
             key.RIGHT: self.avatar.On_RightKeyRelease,
+            key.D: self.avatar.On_RightKeyRelease,
             key.DOWN: self.avatar.On_DownKeyRelease,
+            key.S: self.avatar.On_DownKeyRelease,
             key.LEFT: self.avatar.On_LeftKeyRelease,
+            key.A: self.avatar.On_LeftKeyRelease,
             }
         fn = moveDict.get(symbol)
         if fn:
             fn()
 
+    def on_mouse_press(self, x, y, button, modifiers):
+        self.mouseButton = button
+        self.press()
+    def on_mouse_release(self, x, y, button, modifiers):
+        if self.mouseButton == button:
+            self.release()
 
 
 

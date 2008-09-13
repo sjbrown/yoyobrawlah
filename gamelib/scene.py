@@ -69,14 +69,23 @@ class Menu(Scene):
         self.bg = data.pngs['menu.png']
         self.miscSprites = [
             SimpleTextButton('Start!', 400, 200, True),
-            SimpleTextButton('Full Screen', 400, 150, False)
+            #SimpleTextButton('Full Screen', 400, 150, False)
         ]
 
         self.keyPress = False
+        self.mousePress = False
         self.on_key_press = window.window.event(self.on_key_press)
         self.on_key_release = window.window.event(self.on_key_release)
+        self.on_mouse_press = window.window.event(self.on_mouse_press)
+        self.on_mouse_release = window.window.event(self.on_mouse_release)
 
         self.sound = sound
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        self.mousePress = True
+    def on_mouse_release(self, x, y, button, modifiers):
+        if self.mousePress:
+            self.end()
 
     def on_key_press(self, symbol, modifiers):
         self.keyPress = True

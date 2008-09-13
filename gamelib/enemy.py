@@ -240,7 +240,12 @@ class TalkingEnemy(Enemy):
         if self.currentPart == None:
             events.Fire('StartSpeech', self)
             self.speechIter = iter(self.speech)
-            self.currentPart = self.speechIter.next()
+            try:
+                self.currentPart = self.speechIter.next()
+            except StopIteration:
+                events.Fire('StopSpeech', self)
+                self.state = State.fastWalking
+                return
             events.Fire('SpeechPart', self, self.currentPart[1])
             return
 
@@ -281,6 +286,10 @@ class TalkingKitty(Kitty, TalkingEnemy):
         TalkingEnemy.__init__(self)
         self.speech = speech
 
+class TalkingTeddy(Teddy, TalkingEnemy):
+    def __init__(self, speech):
+        TalkingEnemy.__init__(self)
+        self.speech = speech
 
 class ThrowingKitty(Kitty, Enemy):
     spriteClass = 'ThrowingKittySprite'
