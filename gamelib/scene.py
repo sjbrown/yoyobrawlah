@@ -91,10 +91,19 @@ class Menu(Scene):
         ]
 
         self.keyPress = False
+        self.mousePress = False
         self.on_key_press = window.window.event(self.on_key_press)
         self.on_key_release = window.window.event(self.on_key_release)
+        self.on_mouse_press = window.window.event(self.on_mouse_press)
+        self.on_mouse_release = window.window.event(self.on_mouse_release)
 
         self.sound = sound
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        self.mousePress = True
+    def on_mouse_release(self, x, y, button, modifiers):
+        if self.mousePress:
+            self.end()
 
     def on_key_press(self, symbol, modifiers):
         self.keyPress = True

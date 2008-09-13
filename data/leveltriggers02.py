@@ -6,24 +6,19 @@
 # Rect origin, then just add its width and height
 triggers = {
 
-(200,660): 'start location',
-(361,1000,10,500): 'EnemySpawnLvl2_1',
-(371,1000,10,500): 'EnemySpawnLvl2_2',
-(1024,1000,10,500): 'EnemySpawnLvl2_3',
-(1354,640,60,20): 'StringPickup',
-(1590,1000,10,500): 'EnemySpawnLvl2_4',
-(1600,1000,10,500): 'EnemySpawnLvl2_5',
-(2048,592,640,5): 'EnemySpawnLvl2_6',
-(2048,597,640,5): 'EnemySpawnLvl2_7',
-(2488,560,200,50): 'GoalZone',
-(3108,950,60,20): 'StringPickup',
-(3108,900,60,20): 'StringPickup',
+(100,460): 'start location',
+(366,800,75,330): 'EnemySpawnLvl2_1',
+(450,660,60,20): 'StringPickup',
+(950,800,75,350): 'EnemySpawnLvl2_2',
+(2340,800,15,650): 'EnemySpawnLvl2_3',
+(2260,380,60,20): 'StringPickup',
+(3038,800,75,400): 'GoalZone',
 
 }
 
 def rewriteToCartesian():
     global triggers
-    IMG_HEIGHT = 1000
+    IMG_HEIGHT = 800
 
     newTriggers = {}
     for key, val in triggers.items():
