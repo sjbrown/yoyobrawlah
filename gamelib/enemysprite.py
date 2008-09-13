@@ -52,6 +52,9 @@ class TeddySprite(EnemySprite):
 
         self.hugImgs = {Facing.left: data.pngs[self.imgPrefix+'Hug_left'],
                         Facing.right: data.pngs[self.imgPrefix+'Hug']}
+        self.stunImgs = {Facing.left: data.pngs[self.imgPrefix+'Stun_left'],
+                        Facing.right: data.pngs[self.imgPrefix+'Stun']}
+        self.idleImg = data.pngs[self.imgPrefix+'Stand']
         self.walkImg = self.currentAnim.animation
 
     def draw(self):
@@ -70,6 +73,10 @@ class TeddySprite(EnemySprite):
                 self.image = self.currentAnim.animation
         elif self.enemy.state in State.attackingStates:
             self.image = self.hugImgs[self.enemy.facing]
+        elif self.enemy.state == State.stunned:
+            self.image = self.stunImgs[self.enemy.facing]
+        elif self.enemy.state == State.idle:
+            self.image = self.idleImg
         self.shadow.x = self.x
         self.shadow.y = self.y - (self.shadow.height/2) #shadow center = feetpos
 

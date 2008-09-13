@@ -129,3 +129,9 @@ class Cutscene(Scene):
             nextScene.avatar = self.avatar
             return nextScene
 
+class DeathCutscene(Cutscene):
+    def __init__(self):
+        Cutscene.__init__(self, 99)
+    def getNextScene(self):
+        return Menu()
+

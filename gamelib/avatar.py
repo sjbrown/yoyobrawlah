@@ -38,11 +38,13 @@ class AvatarAttack(object):
 
 class Avatar(Walker):
     '''This is the duder that a player controls'''
+    attackImg = 'subAttack'
+    deadImg = 'subdeath'
 
     def __init__(self):
         Walker.__init__(self)
         events.AddListener(self)
-        self.health = 10
+        self.health = 3
         self.state = State.normal
         self.upPressed = False
         self.rightPressed = False
@@ -244,6 +246,7 @@ class Avatar(Walker):
         # when the events module dispatches its events
         if amount <= 0:
             return #not actually hurt
+        print 'reducing heatlh', self.health
         self.health -= amount
         if self.health > 0:
             events.Fire('AvatarHurt', self)

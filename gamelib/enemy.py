@@ -22,6 +22,7 @@ class State:
 
 class Enemy(Walker):
     def __init__(self):
+        events.AddListener(self)
         Walker.__init__(self)
         self.health = 10
         self.energy = 1
@@ -35,6 +36,9 @@ class Enemy(Walker):
         self.yFightingReach = 4
         self.attack = attacks.Hug()
         self.stunCounter = 0
+
+    def On_AvatarDeath(self, avatar):
+        self.state = State.idle
 
     def Hurt(self, amount):
         self.health -= amount
@@ -91,6 +95,11 @@ class Enemy(Walker):
             return self.update_talk(timeChange)
         elif self.state == State.stunned:
             return self.update_stunned(timeChange)
+        elif self.state == State.idle:
+            return self.update_idle(timeChange)
+
+    def update_idle(self, timeChange):
+        pass
 
     def update_stunned(self, timeChange):
         self.stunCounter += timeChange
@@ -211,6 +220,7 @@ class WackyEnemy(Enemy):
 
 class TalkingEnemy(Enemy):
     spriteClass = 'TeddySprite'
+    deathImg = 'tedDead'
     def __init__(self):
         Enemy.__init__(self)
         self.state = State.talking
@@ -258,8 +268,12 @@ class Speeches:
 
 class Teddy:
     spriteClass = 'TeddySprite'
+    deathImg = 'tedDead'
+    idleImg = 'tedStand'
 class Kitty:
     spriteClass = 'KittySprite'
+    deathImg = 'kitDead'
+    idleImg = 'kitStand'
 
 class TalkingKitty(Kitty, TalkingEnemy):
     spriteClass = 'KittySprite'

@@ -18,7 +18,7 @@ from pyglet.gl import *
 
 import visualeffects
 
-from scene import Scene, Cutscene
+from scene import Scene, Cutscene, DeathCutscene
 
 DEBUG = True
 
@@ -189,16 +189,16 @@ class Heart(pyglet.sprite.Sprite):
 
 class HeartMeter:
     def __init__(self):
-        self.hearts = []
-        self.hearts.append(Heart())
-        self.hearts.append(Heart())
+        pass
 
     def update(self, tick):
         pass
 
-    def draw(self):
-        for count, heart in enumerate(self.hearts):
-            heart.x = count * 41 + 115
+    def draw(self, avatar):
+        #TODO: its not efficient to create sprites in here every time
+        for i in range(avatar.health):
+            heart = Heart()
+            heart.x = i * 41 + 10
             heart.y = 0
             heart.draw()
 
@@ -234,6 +234,7 @@ class EnergyMeter(object):
             self.yoImg.y += self.yoImgShake[1]
             
         x += 30
+        #TODO: its not efficient to create sprites in here every time
         for i in range(avatar.getStringLength()):
             stringImg = StringHud()
             if i > 4:
@@ -256,6 +257,7 @@ class Level(Scene):
     def __init__(self, levelNum):
         events.AddListener(self)
         self.done = False
+        self.deathDelay = 0
         self.levelNum = levelNum
         strLevelNum = '%02d' % levelNum
         #self.bg = data.pngs['levelbg'+strLevelNum+'.png']
@@ -274,7 +276,7 @@ class Level(Scene):
 
         self.miscSprites = []
         healthFont = font.load('Oh Crud BB', 28)
-        self.healthText = font.Text(healthFont, x=10, y=25, text='Health:')
+        #self.healthText = font.Text(healthFont, x=10, y=25, text='Health:')
         self.healthBar = HeartMeter()
         self.energyBar = EnergyMeter((240,5))
 
@@ -347,6 +349,12 @@ class Level(Scene):
 
             events.ConsumeEventQueue()
             win.dispatch_events()
+
+            if self.deathDelay:
+                self.deathDelay -= timeChange
+                if self.deathDelay <= 0:
+                    self.done = True
+
             avSprite.update( timeChange )
             for miscSprite in self.miscSprites:
                 miscSprite.update(timeChange)
@@ -390,8 +398,8 @@ class Level(Scene):
             for sprite in self.visualEffects.sprites:
                 sprite.draw()
 
-            self.healthText.draw()
-            self.healthBar.draw()
+            #self.healthText.draw()
+            self.healthBar.draw(self.avatar)
             self.energyBar.draw(self.avatar)
 
             if DEBUG:
@@ -405,6 +413,15 @@ class Level(Scene):
     def On_LevelCompletedEvent(self, level):
         # just assume it's me.
         self.end()
+
+    def On_AvatarDeath(self, avatar):
+        # wait 5 seconds then cutscene
+        self.deathDelay = 5.0
+        def getNextScene():
+            scene = DeathCutscene()
+            scene.avatar = None
+            return scene
+        self.getNextScene = getNextScene
 
     def On_EnemyBirth(self, enemy):
         print 'handling enemy birth'

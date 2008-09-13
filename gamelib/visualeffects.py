@@ -12,6 +12,9 @@ import attacks
 
 import euclid
 
+def toScreenPos(pos):
+    return [pos[0] + window.bgOffset[0], pos[1] + window.bgOffset[1]]
+
 class EffectManager(object):
     def __init__(self):
         self.sprites = []
@@ -19,9 +22,7 @@ class EffectManager(object):
         self.speechBubbles = {}
 
     def On_EnemyHurt(self, enemy):
-        pos = list(enemy.feetPos)
-        pos[0] += window.bgOffset[0]
-        pos[1] += window.bgOffset[1]
+        pos = toScreenPos(enemy.feetPos)
         pos[1] += 50
         direction = {-1: Blood.left, 1:Blood.right}[enemy.facing]
         for drop in range(0, randint(5, 20)):
@@ -31,9 +32,7 @@ class EffectManager(object):
 
     def On_ExplosionSpecial(self, pos):
         print 'splode'
-        pos = list(pos)
-        pos[0] += window.bgOffset[0]
-        pos[1] += window.bgOffset[1]
+        pos = toScreenPos(pos)
         for drop in range(0, randint(4, 8)):
             vector = euclid.Vector2(randint(-2,3), randint(-2,3))
             fb = Fireball(pos, vector)
@@ -41,9 +40,7 @@ class EffectManager(object):
 
     def On_WhiffSpecial(self, pos):
         print 'whiff'
-        pos = list(pos)
-        pos[0] += window.bgOffset[0]
-        pos[1] += window.bgOffset[1]
+        pos = toScreenPos(pos)
         for drop in range(0, randint(5, 8)):
             vector = euclid.Vector2(randint(-2,3), randint(-2,3))
             puff = Puff(pos, vector)
@@ -71,6 +68,11 @@ class EffectManager(object):
         if speaker in self.speechBubbles:
             self.sprites.remove(self.speechBubbles[speaker])
             del self.speechBubbles[speaker]
+
+    def On_EnemyDeath(self, enemy):
+        cls = random.choice([EnemyDeath1, EnemyDeath2])
+        self.sprites.append(cls(enemy))
+
 
 class SpeechBubble(pyglet.sprite.Sprite):
     xPadding = 10
@@ -122,6 +124,41 @@ class HeartFloaty(pyglet.sprite.Sprite):
         self.opacity -= 2
         self.scale += 0.01
         if self.opacity < 80:
+            events.Fire('SpriteRemove', self)
+
+class EnemyDeath1(pyglet.sprite.Sprite):
+    def __init__(self, enemy):
+        img = data.pngs[enemy.deathImg]
+        pyglet.sprite.Sprite.__init__(self, img, 0, 0)
+        self.logicalX = enemy.feetPos[0]
+        self.logicalY = enemy.feetPos[1]
+
+    def update(self, timeChange=None):
+        self.x = self.logicalX + window.bgOffset[0]
+        self.y = self.logicalY + window.bgOffset[1]
+        self.logicalX += randint(-2, 2)
+        self.logicalY += 5
+        self.opacity -= 2
+        self.scale += 0.01
+        if self.opacity < 80:
+            events.Fire('SpriteRemove', self)
+
+class EnemyDeath2(EnemyDeath1):
+    def __init__(self, enemy):
+        EnemyDeath1.__init__(self, enemy)
+        self.logicalX -= 75
+        self.logicalY -= 14
+        self.color = (255,255,255)
+
+    def update(self, timeChange=None):
+        self.x = self.logicalX + window.bgOffset[0]
+        self.y = self.logicalY + window.bgOffset[1]
+        self.color = (self.color[0] -2,
+                      self.color[1] -2,
+                      self.color[2] -2,
+                     )
+        self.opacity -= 2
+        if self.color[0] < 20:
             events.Fire('SpriteRemove', self)
 
 
