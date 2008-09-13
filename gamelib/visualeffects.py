@@ -31,7 +31,7 @@ class EffectManager(object):
             self.sprites.append(bl)
 
     def On_ExplosionSpecial(self, pos):
-        print 'splode'
+        #print 'splode'
         pos = toScreenPos(pos)
         for drop in range(0, randint(2, 4)):
             vector = euclid.Vector2(randint(-2,3), randint(-2,3))
@@ -39,7 +39,7 @@ class EffectManager(object):
             self.sprites.append(fb)
 
     def On_WhiffSpecial(self, pos):
-        print 'whiff'
+        #print 'whiff'
         pos = toScreenPos(pos)
         for drop in range(0, randint(5, 8)):
             vector = euclid.Vector2(randint(-2,3), randint(-2,3))
@@ -73,6 +73,10 @@ class EffectManager(object):
         cls = random.choice([EnemyDeath1, EnemyDeath2])
         self.sprites.append(cls(enemy))
 
+    def On_LevelCompletedEvent(self, *args):
+        print 'LVL COMPLETE'
+        self.sprites = []
+        self.speechBubbles = {}
 
 class SpeechBubble(pyglet.sprite.Sprite):
     xPadding = 10

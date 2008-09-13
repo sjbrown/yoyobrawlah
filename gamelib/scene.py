@@ -38,6 +38,9 @@ class Scene(object):
     def end(self):
         events.RemoveListener(self)
         self.done = True
+        if hasattr(self, 'avatar') and self.avatar:
+            self.avatar.newLevel()
+            
 
 class SimpleTextButton:
     def __init__(self, text, x, y, selected=False):
@@ -139,6 +142,7 @@ class Cutscene(Scene):
             import level
             nextScene = level.getLevel(self.nextLevelNum, self.sound)
             nextScene.avatar = self.avatar
+            nextScene.visualEffects = self.visualEffects
             nextScene.sound = self.sound
             return nextScene
 

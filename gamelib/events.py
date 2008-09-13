@@ -14,6 +14,7 @@ It's only advantage is that it saves me some typing.
 
 """
 
+import weakref
 from logging import info as log_info
 
 #------------------------------------------------------------------------------
@@ -22,19 +23,19 @@ from logging import info as log_info
 
 #outside objects can feel free to add themselves to this list
 #YES, it is pretty lazy.  Bad programmer!  No cookie!
-__listeners = []
+__listeners = weakref.WeakKeyDictionary()
 
 __validEvents = []
 
 __eventQueue = []
 
 def AddListener( newListener ):
-	__listeners.append( newListener )
+	__listeners[ newListener ] = 1
 
 def RemoveListener( listener ):
 	try:
-		__listeners.remove( listener )
-	except ValueError:
+		del __listeners[ listener ]
+	except KeyError:
 		pass
 
 def AddEvent( newEvent ):
@@ -57,7 +58,11 @@ def ConsumeEventQueue():
 	while i < len( __eventQueue ):
 		evName, args, kwargs = __eventQueue[i]
 		#log_info( 'firing event' + str( evName ) )
-		for listener in __listeners:
+		print 'number of listeners:', len(__listeners)
+		keys = __listeners.keys()
+		for k in keys:
+		    print ' ', k
+		for listener in sorted(keys, lambda x,y: cmp(x.__class__.__name__, y.__class__.__name__)):
 			methodName = "On_"+ evName
 			#if the listener has a handler, call it
 			try:

@@ -44,8 +44,12 @@ class TriggerZone(object):
         self.level = level
         self.fired = False
         self.debugSprite = TriggerZoneDebugSprite(self)
-    def fire(self, firer):
-        print 'firing triggerzone'
+    def fire(self, firer=None):
+        #print 'firing triggerzone'
+        self.fired = True
+    def end(self):
+        del self.level
+        del self.debugSprite
 
     def doEnemy(self, cls, args, pos, firer):
         enemy = cls(*args)
@@ -58,8 +62,9 @@ class GoalZone(TriggerZone):
     def fire(self, firer):
         if self.fired:
             return
+        TriggerZone.fire(self)
 
-        self.fired = True
+        print "GOOOOOOAL"
         events.Fire('LevelCompletedEvent', getActiveLevel())
 
 # XXX - this sucks
@@ -68,31 +73,34 @@ class EnemySpawnLvl1_1(TriggerZone):
     def fire(self, firer):
         if self.fired:
             return
+        TriggerZone.fire(self)
 
-        self.fired = True
         self.doEnemy(TalkingTeddy, [Speeches.ohHai], (200,248), firer)
+        self.end()
 
 class EnemySpawnLvl1_2(TriggerZone):
     def fire(self, firer):
         if self.fired:
             return
-        self.fired = True
+        TriggerZone.fire(self)
         self.doEnemy(TalkingKitty, [Speeches.hugs], (945,350), firer)
+        self.end()
 
 class EnemySpawnLvl1_3(TriggerZone):
     def fire(self, firer):
         if self.fired:
             return
-        self.fired = True
+        TriggerZone.fire(self)
         self.doEnemy(TalkingTeddy, [Speeches.ohHai], (2200, 150), firer)
+        self.end()
 
 class EnemySpawnLvl1_4(TriggerZone):
     def fire(self, firer):
         if self.fired:
             return
-
-        self.fired = True
+        TriggerZone.fire(self)
         self.doEnemy(TalkingTeddy, [[]], (2200, 275), firer)
+        self.end()
 
 class EnemySpawnLvl2_1(TriggerZone):
     def fire(self, firer):
@@ -102,229 +110,67 @@ class EnemySpawnLvl2_1(TriggerZone):
         self.fired = True
         self.doEnemy(ThrowingKitty, [], (140, 800-460), firer)
         self.doEnemy(TalkingTeddy, [Speeches.nohugs], (75, 800-520), firer)
+        self.end()
 
 class EnemySpawnLvl2_2(TriggerZone):
     def fire(self, firer):
         if self.fired:
             return
-
-        self.fired = True
+        TriggerZone.fire(self)
         self.doEnemy(ThrowingKitty, [], (1230, 800-490), firer)
         self.doEnemy(ThrowingKitty, [], (1350, 800-490), firer)
+        self.end()
 
 class EnemySpawnLvl2_3(TriggerZone):
     def fire(self, firer):
         if self.fired:
             return
-
-        self.fired = True
+        TriggerZone.fire(self)
         self.doEnemy(ThrowingKitty, [], (2540, 800-440), firer)
         self.doEnemy(ThrowingKitty, [], (2720, 800-490), firer)
         self.doEnemy(ThrowingKitty, [], (2910, 800-490), firer)
+        self.end()
+
+class EnemySpawnLvl3_1(TriggerZone):
+    def fire(self, firer):
+        if self.fired:
+            return
+        TriggerZone.fire(self)
+        self.doEnemy(TalkingTeddy, [[]], (130, 880-520), firer)
+        self.doEnemy(TalkingTeddy, [[]], (130, 880-820), firer)
+        self.doEnemy(ThrowingKitty, [], (500, 880-520), firer)
+        self.doEnemy(ThrowingKitty, [], (500, 880-820), firer)
+        self.doEnemy(ThrowingKitty, [], (500, 880-820), firer)
+        self.end()
 
 class EnemySpawnLvl3_2(TriggerZone):
     def fire(self, firer):
         if self.fired:
             return
+        TriggerZone.fire(self)
 
-        self.fired = True
-        enemy = TalkingTeddy()
-        enemy.feetPos = (200, 125)
-        enemy.walkMask = self.level.walkMask
-        enemy.showAvatar(firer)
-        events.Fire('EnemyBirth', enemy)
+        self.doEnemy(TalkingTeddy, [[]], (860, 880-860), firer)
+        self.doEnemy(TalkingTeddy, [[]], (600, 880-860), firer)
+        self.doEnemy(TalkingTeddy, [[]], (1070, 880-860), firer)
+        self.doEnemy(ThrowingKitty, [], (590, 880-500), firer)
+        self.end()
 
 class EnemySpawnLvl3_3(TriggerZone):
     def fire(self, firer):
         if self.fired:
             return
+        TriggerZone.fire(self)
 
-        self.fired = True
-        enemy = TalkingTeddy()
-        enemy.feetPos = (1200, 236)
-        enemy.walkMask = self.level.walkMask
-        enemy.showAvatar(firer)
-        events.Fire('EnemyBirth', enemy)
+        self.doEnemy(TalkingTeddy, [[]], (1650, 880-500), firer)
+        self.doEnemy(ThrowingKitty, [], (1650, 880-500), firer)
+        self.doEnemy(TalkingTeddy, [[]], (1500, 880-860), firer)
+        self.doEnemy(ThrowingKitty, [], (1500, 880-860), firer)
+        self.doEnemy(TalkingTeddy, [[]], (2046, 880-860), firer)
+        self.doEnemy(ThrowingKitty, [], (2046, 880-860), firer)
+        self.doEnemy(TalkingTeddy, [[]], (2246, 880-500), firer)
+        self.doEnemy(ThrowingKitty, [], (2246, 880-500), firer)
+        self.end()
 
-class EnemySpawnLvl3_4(TriggerZone):
-    def fire(self, firer):
-        if self.fired:
-            return
-
-        self.fired = True
-        enemy = TalkingTeddy()
-        enemy.feetPos = (1750, 372)
-        enemy.walkMask = self.level.walkMask
-        enemy.showAvatar(firer)
-        events.Fire('EnemyBirth', enemy)
-
-class EnemySpawnLvl3_5(TriggerZone):
-    def fire(self, firer):
-        if self.fired:
-            return
-
-        self.fired = True
-        enemy = TalkingTeddy()
-        enemy.feetPos = (1900, 372)
-        enemy.walkMask = self.level.walkMask
-        enemy.showAvatar(firer)
-        events.Fire('EnemyBirth', enemy)
-
-class EnemySpawnLvl3_6(TriggerZone):
-    def fire(self, firer):
-        if self.fired:
-            return
-
-        self.fired = True
-        enemy = TalkingTeddy()
-        enemy.feetPos = (2080, 486)
-        enemy.walkMask = self.level.walkMask
-        enemy.showAvatar(firer)
-        events.Fire('EnemyBirth', enemy)
-
-class EnemySpawnLvl3_7(TriggerZone):
-    def fire(self, firer):
-        if self.fired:
-            return
-
-        self.fired = True
-        enemy = TalkingTeddy()
-        enemy.feetPos = (2466, 432)
-        enemy.walkMask = self.level.walkMask
-        enemy.showAvatar(firer)
-        events.Fire('EnemyBirth', enemy)
-
-class EnemySpawnLvl4_1(TriggerZone):
-    def fire(self, firer):
-        if self.fired:
-            return
-
-        self.fired = True
-        enemy = TalkingTeddy()
-        enemy.feetPos = (520, 402)
-        enemy.walkMask = self.level.walkMask
-        enemy.showAvatar(firer)
-        events.Fire('EnemyBirth', enemy)
-
-class EnemySpawnLvl4_2(TriggerZone):
-    def fire(self, firer):
-        if self.fired:
-            return
-
-        self.fired = True
-        enemy = TalkingTeddy()
-        enemy.feetPos = (365, 75)
-        enemy.walkMask = self.level.walkMask
-        enemy.showAvatar(firer)
-        events.Fire('EnemyBirth', enemy)
-
-class EnemySpawnLvl4_3(TriggerZone):
-    def fire(self, firer):
-        if self.fired:
-            return
-
-        self.fired = True
-        enemy = TalkingTeddy()
-        enemy.feetPos = (425, 75)
-        enemy.walkMask = self.level.walkMask
-        enemy.showAvatar(firer)
-        events.Fire('EnemyBirth', enemy)
-
-class EnemySpawnLvl4_4(TriggerZone):
-    def fire(self, firer):
-        if self.fired:
-            return
-
-        self.fired = True
-        enemy = TalkingTeddy()
-        enemy.feetPos = (1425, 388)
-        enemy.walkMask = self.level.walkMask
-        enemy.showAvatar(firer)
-        events.Fire('EnemyBirth', enemy)
-
-class EnemySpawnLvl4_5(TriggerZone):
-    def fire(self, firer):
-        if self.fired:
-            return
-
-        self.fired = True
-        enemy = TalkingTeddy()
-        enemy.feetPos = (1485, 388)
-        enemy.walkMask = self.level.walkMask
-        enemy.showAvatar(firer)
-        events.Fire('EnemyBirth', enemy)
-
-class EnemySpawnLvl4_6(TriggerZone):
-    def fire(self, firer):
-        if self.fired:
-            return
-
-        self.fired = True
-        enemy = TalkingTeddy()
-        enemy.feetPos = (1820, 400)
-        enemy.walkMask = self.level.walkMask
-        enemy.showAvatar(firer)
-        events.Fire('EnemyBirth', enemy)
-
-class EnemySpawnLvl4_7(TriggerZone):
-    def fire(self, firer):
-        if self.fired:
-            return
-
-        self.fired = True
-        enemy = TalkingTeddy()
-        enemy.feetPos = (1890, 400)
-        enemy.walkMask = self.level.walkMask
-        enemy.showAvatar(firer)
-        events.Fire('EnemyBirth', enemy)
-
-class EnemySpawnLvl4_8(TriggerZone):
-    def fire(self, firer):
-        if self.fired:
-            return
-
-        self.fired = True
-        enemy = TalkingTeddy()
-        enemy.feetPos = (1960, 400)
-        enemy.walkMask = self.level.walkMask
-        enemy.showAvatar(firer)
-        events.Fire('EnemyBirth', enemy)
-
-class EnemySpawnLvl4_9(TriggerZone):
-    def fire(self, firer):
-        if self.fired:
-            return
-
-        self.fired = True
-        enemy = TalkingTeddy()
-        enemy.feetPos = (2280, 5)
-        enemy.walkMask = self.level.walkMask
-        enemy.showAvatar(firer)
-        events.Fire('EnemyBirth', enemy)
-
-class EnemySpawnLvl4_10(TriggerZone):
-    def fire(self, firer):
-        if self.fired:
-            return
-
-        self.fired = True
-        enemy = TalkingTeddy()
-        enemy.feetPos = (2350, 5)
-        enemy.walkMask = self.level.walkMask
-        enemy.showAvatar(firer)
-        events.Fire('EnemyBirth', enemy)
-
-class EnemySpawnLvl4_11(TriggerZone):
-    def fire(self, firer):
-        if self.fired:
-            return
-
-        self.fired = True
-        enemy = TalkingTeddy()
-        enemy.feetPos = (2370, 5)
-        enemy.walkMask = self.level.walkMask
-        enemy.showAvatar(firer)
-        events.Fire('EnemyBirth', enemy)
 
 class TriggerZoneDebugSprite(pyglet.sprite.Sprite):
     def __init__(self, zone):
@@ -402,6 +248,7 @@ class StringPickup(TriggerZone):
         #print 'string pickup!'
         self.fired = True
         firer.pickupString()
+        del self.sprite
         events.Fire('TriggerZoneRemove', self)
 
 class Heart(pyglet.sprite.Sprite):
@@ -421,7 +268,7 @@ class HeartMeter:
         for i in range(avatar.health):
             heart = Heart()
             heart.x = i * 41 + 10
-            heart.y = 0
+            heart.y = 5
             heart.draw()
 
 class YoyoHud(pyglet.sprite.Sprite):
@@ -495,10 +342,10 @@ class Level(Scene):
         bgPngs.sort()
         self.bgImages = [data.pngs[png] for png in bgPngs]
 
-        self.visualEffects = visualeffects.EffectManager()
 
         if self.levelNum == 1:
             self.avatar = Avatar()
+            self.visualEffects = visualeffects.EffectManager()
 
         self.miscSprites = []
         healthFont = font.load('Oh Crud BB', 28)
@@ -536,12 +383,23 @@ class Level(Scene):
         #print 'getting next scene for ', self.levelNum
         nextScene = getLevel(self.levelNum+1, self.sound)
         nextScene.avatar = self.avatar
+        nextScene.visualEffects = self.visualEffects
         return nextScene
 
     def end(self):
         events.RemoveListener(self)
         self.done = True
         self.avatar.triggerZones = []
+        self.avatar.newLevel()
+        del self.enemySprites
+        del self.miscSprites
+        #del self.avatar
+        del self.walkMask
+        del self.triggerZones
+        #del self.visualEffects
+        del self.bgImages
+        del self.healthBar
+        del self.energyBar
 
     def getAttackables(self):
         # TODO: might wanna be more sophisticated, including barrels and such.
@@ -589,6 +447,9 @@ class Level(Scene):
                 self.deathDelay -= timeChange
                 if self.deathDelay <= 0:
                     self.done = True
+
+            if self.done:
+                break
 
             avSprite.update( timeChange )
             for miscSprite in self.miscSprites:
@@ -679,6 +540,7 @@ class Level2(Level):
     def getNextScene(self):
         scene = Cutscene(1)
         scene.avatar = self.avatar
+        scene.visualEffects = self.visualEffects
         scene.nextLevelNum = 3
         scene.sound = self.sound
         return scene

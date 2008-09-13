@@ -6,26 +6,30 @@
 # Rect origin, then just add its width and height
 triggers = {
 
-(200,760): 'start location',
-(136,964,60,20): 'StringPickup',
-(226,964,60,20): 'StringPickup',
-(488,744,10,210): 'EnemySpawnLvl3_1',
-(498,744,10,210): 'EnemySpawnLvl3_2',
-(518,744,10,210): 'EnemySpawnLvl3_3',
-(528,744,10,210): 'EnemySpawnLvl3_4',
-(548,744,10,210): 'EnemySpawnLvl3_5',
-(558,744,10,210): 'EnemySpawnLvl3_6',
-(578,744,10,210): 'EnemySpawnLvl3_7',
-(588,744,10,210): 'EnemySpawnLvl3_8',
-(608,744,10,210): 'EnemySpawnLvl3_9',
-(618,744,10,210): 'EnemySpawnLvl3_10',
-(638,744,10,210): 'EnemySpawnLvl3_11',
+(200,660): 'start location',
+(361,1000,10,500): 'EnemySpawnLvl3_1',
+(686,540,340,70): 'EnemySpawnLvl3_2',
+(1760,680,150,110): 'EnemySpawnLvl3_3',
+#(1590,1000,10,500): 'EnemySpawnLvl3_4',
+#(1600,1000,10,500): 'EnemySpawnLvl3_5',
+#(2048,592,640,5):   'EnemySpawnLvl3_6',
+#(2048,597,640,5):   'EnemySpawnLvl3_7',
+(730,500,60,20): 'StringPickup',
+(830,510,60,20): 'StringPickup',
+(920,500,60,20): 'StringPickup',
+(1820,620,80,34): 'YoyoPickup',
+(2046,420,210,50): 'GoalZone',
+
+(2730,800,60,20): 'StringPickup',
+(2750,730,60,20): 'StringPickup',
+(2930,790,60,20): 'StringPickup',
+(2700,850,60,20): 'StringPickup',
 
 }
 
 def rewriteToCartesian():
     global triggers
-    IMG_HEIGHT = 1000
+    IMG_HEIGHT = 880
 
     newTriggers = {}
     for key, val in triggers.items():

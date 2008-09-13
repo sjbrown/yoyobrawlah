@@ -146,6 +146,12 @@ class Avatar(Walker):
         self.leftPressed = True
     def On_LeftKeyRelease(self):
         self.leftPressed = False
+
+    def newLevel(self):
+        self.upPressed = False
+        self.rightPressed = False
+        self.downPressed = False
+        self.leftPressed = False
             
     def update(self, timeChange=None):
         if self.state == State.normal:
