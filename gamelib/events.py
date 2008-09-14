@@ -33,10 +33,15 @@ def AddListener( newListener ):
 	__listeners[ newListener ] = 1
 
 def RemoveListener( listener ):
+	global __listeners
 	try:
 		del __listeners[ listener ]
 	except KeyError:
 		pass
+
+def Reset():
+	global __listeners
+	__listeners = weakref.WeakKeyDictionary()
 
 def AddEvent( newEvent ):
 	__validEvents.append( newEvent )
@@ -113,4 +118,5 @@ SpeechPart
 StopSpeech
 WhiffSpecial
 ExplosionSpecial
+LowFPS30
 '''.strip().split()

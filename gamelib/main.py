@@ -8,6 +8,7 @@ Contains the entry point used by the run_game.py script.
 import pyglet
 import window
 import scene
+import events
 
 import soundeffects
 
@@ -29,6 +30,8 @@ def main(vsync=False, sound=True):
 
     while currentScene and not win.has_exit:
         currentScene = currentScene.run()
+        if soundEffects not in events.__listeners:
+            events.AddListener(soundEffects)
 
 if __name__ == '__main__':
     main()

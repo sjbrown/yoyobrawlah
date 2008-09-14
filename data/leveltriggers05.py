@@ -12,14 +12,6 @@ triggers = {
 (488,744,10,210): 'EnemySpawnLvl3_1',
 (498,744,10,210): 'EnemySpawnLvl3_2',
 (518,744,10,210): 'EnemySpawnLvl3_3',
-(528,744,10,210): 'EnemySpawnLvl3_4',
-(548,744,10,210): 'EnemySpawnLvl3_5',
-(558,744,10,210): 'EnemySpawnLvl3_6',
-(578,744,10,210): 'EnemySpawnLvl3_7',
-(588,744,10,210): 'EnemySpawnLvl3_8',
-(608,744,10,210): 'EnemySpawnLvl3_9',
-(618,744,10,210): 'EnemySpawnLvl3_10',
-(638,744,10,210): 'EnemySpawnLvl3_11',
 (2600, 560, 50, 100): 'GoalZone' 
 }
 

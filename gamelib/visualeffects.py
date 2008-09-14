@@ -75,7 +75,6 @@ class EffectManager(object):
         self.sprites.append(cls(enemy))
 
     def On_LevelCompletedEvent(self, *args):
-        print 'LVL COMPLETE'
         self.sprites = []
         self.speechBubbles = weakref.WeakKeyDictionary()
 

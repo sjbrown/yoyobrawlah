@@ -10,6 +10,8 @@ import events
 import glob
 import os.path
 
+import player
+
 from avatar import Avatar, LogicalYoyo
 from avatarsprite import AvatarSprite
 from enemy import Enemy, TalkingTeddy, TalkingKitty, Speeches, ThrowingKitty
@@ -20,10 +22,10 @@ from pyglet.gl import *
 import visualeffects
 import soundeffects
 
-from scene import Scene, Cutscene, DeathCutscene
+from scene import Scene, Cutscene, DeathCutscene, WinCutscene
 import main
 
-DEBUG = True
+DEBUG = False
 soundtrack = None
 
 _activeLevel = None
@@ -375,9 +377,9 @@ class Level(Scene):
         bgPngs.sort()
         self.bgImages = [data.pngs[png] for png in bgPngs]
 
-        if self.levelNum == 1:
-            self.avatar = Avatar()
-            self.visualEffects = visualeffects.EffectManager()
+        self.avatar = Avatar()
+        self.avatar.strings = player.strings[:]
+        self.visualEffects = visualeffects.EffectManager()
 
         self.miscSprites = []
         healthFont = font.load('Oh Crud BB', 28)
@@ -414,8 +416,6 @@ class Level(Scene):
     def getNextScene(self):
         #print 'getting next scene for ', self.levelNum
         nextScene = getLevel(self.levelNum+1, self.sound)
-        nextScene.avatar = self.avatar
-        nextScene.visualEffects = self.visualEffects
         return nextScene
 
     def end(self):
@@ -426,10 +426,9 @@ class Level(Scene):
         self.avatar.newLevel()
         del self.enemySprites
         del self.miscSprites
-        #del self.avatar
         del self.walkMask
         del self.triggerZones
-        #del self.visualEffects
+        del self.visualEffects
         del self.bgImages
         del self.healthBar
         del self.energyBar
@@ -481,7 +480,9 @@ class Level(Scene):
                 if self.deathDelay <= 0:
                     self.done = True
 
-            if self.done:
+            if self.done or win.has_exit:
+                player.strings = self.avatar.strings[:]
+                events.Reset()
                 break
 
             avSprite.update( timeChange )
@@ -493,8 +494,6 @@ class Level(Scene):
                 sprite.update(timeChange)
 
             win.clear()
-            if self.done or win.has_exit:
-                break
 
             # find the combined height of the background images
 
@@ -535,6 +534,9 @@ class Level(Scene):
                 self.fpsText.text = "fps: %d" % clock.get_fps()
                 self.fpsText.draw()
 
+            if clock.get_fps() < 30:
+                events.Fire('LowFPS30')
+
             win.flip()
 
         return self.getNextScene()
@@ -572,8 +574,6 @@ class Level(Scene):
 class Level2(Level):
     def getNextScene(self):
         scene = Cutscene(1)
-        scene.avatar = self.avatar
-        scene.visualEffects = self.visualEffects
         scene.nextLevelNum = 3
         scene.sound = self.sound
         return scene

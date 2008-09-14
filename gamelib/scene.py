@@ -160,8 +160,8 @@ class Cutscene(Scene):
             # passing them on...
             import level
             nextScene = level.getLevel(self.nextLevelNum, self.sound)
-            nextScene.avatar = self.avatar
-            nextScene.visualEffects = self.visualEffects
+            #nextScene.avatar = self.avatar
+            #nextScene.visualEffects = self.visualEffects
             nextScene.sound = self.sound
             return nextScene
 
@@ -169,7 +169,8 @@ class WinCutscene(Cutscene):
     def __init__(self):
         Cutscene.__init__(self, 2)
     def getNextScene(self):
-        return Menu()
+        import sys
+        sys.exit()
 
 class DeathCutscene(Cutscene):
     def __init__(self):
