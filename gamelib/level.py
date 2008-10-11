@@ -25,7 +25,7 @@ import soundeffects
 from scene import Scene, Cutscene, DeathCutscene, WinCutscene
 import main
 
-DEBUG = False
+DEBUG = True
 soundtrack = None
 
 _activeLevel = None
@@ -68,7 +68,6 @@ class GoalZone(TriggerZone):
             return
         TriggerZone.fire(self)
 
-        #print "GOOOOOOAL"
         events.Fire('LevelCompletedEvent', getActiveLevel())
 
 # XXX - this sucks
@@ -228,6 +227,10 @@ class PickupSprite(pyglet.sprite.Sprite):
         pyglet.sprite.Sprite.__init__(self, img, self.origX, self.origY)
         events.AddListener(self)
         self.state = 'normal'
+
+    def __repr__(self):
+        return '<' + self.__class__.__name__ +\
+               (' (%s,%s) at %d>' % (self.origX, self.origY, id(self)))
 
     def On_TriggerZoneRemove(self, zone):
         if self.zone != zone:
@@ -420,7 +423,7 @@ class Level(Scene):
 
     def end(self):
         events.RemoveListener(self)
-        #print "E"*80, 'end'
+        events.CleanWeakrefs()
         self.done = True
         self.avatar.triggerZones = []
         self.avatar.newLevel()
