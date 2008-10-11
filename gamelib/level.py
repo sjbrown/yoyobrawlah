@@ -25,7 +25,7 @@ import soundeffects
 from scene import Scene, Cutscene, DeathCutscene, WinCutscene
 import main
 
-DEBUG = True
+DEBUG = False
 soundtrack = None
 
 _activeLevel = None
