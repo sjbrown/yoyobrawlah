@@ -14,6 +14,7 @@ It's only advantage is that it saves me some typing.
 
 """
 
+import gc
 import weakref
 from logging import info as log_info
 
@@ -57,21 +58,18 @@ def Fire( evName, *args, **kwargs ):
 
 	__eventQueue.append( (evName, args, kwargs) )
 
+def CleanWeakrefs():
+	# with a really tight update / draw cycle the garbage collector 
+	# apparently doesn't get a chance to sweep up the weakrefs, so 
+	# we need to do it explicitly
+	gc.collect()
+
 def ConsumeEventQueue():
 	i = 0
 	global __eventQueue
 	while i < len( __eventQueue ):
 		evName, args, kwargs = __eventQueue[i]
-		#log_info( 'firing event' + str( evName ) )
 		keys = __listeners.keys()
-                #import gc
-		#sorr = sorted(keys, lambda x,y: cmp(x.__class__.__name__, y.__class__.__name__))
-		#for k in sorr:
-		    #if 'Kitty' in k.__class__.__name__:
-                        #print ' ', k
-                        #print gc.get_referrers(k)
-                        #referrers = gc.get_referrers(k)
-                        #print [r for r in referrers if (r is not keys) and (r is not sorr)]
 		for listener in keys:
 			methodName = "On_"+ evName
 			#if the listener has a handler, call it
