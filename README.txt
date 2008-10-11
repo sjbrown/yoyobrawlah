@@ -32,7 +32,14 @@ HOW TO PLAY THE GAME:
 
 Movement: Direction keys
 
-Attack: CTRL key or SPACE BAR (or mousebutton?)
+Attack: CTRL key or SPACE BAR or mousebutton
 
 
+You can gather more string for your yoyo which increases its power and range.
+When you have more than 5 string power, your yoyo will cast explosions, but
+each explosion will remove one string.
+
+If you are hit with something sharp, you will lose health.  If you are down
+to one health, you will lose all of your string.  If you have no extra string
+then you will die.
 
