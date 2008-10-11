@@ -12,7 +12,7 @@ import os.path
 
 import player
 
-from avatar import Avatar, LogicalYoyo
+from avatar import Avatar, LogicalYoyo, AutonomousAvatar
 from avatarsprite import AvatarSprite
 from enemy import Enemy, TalkingTeddy, TalkingKitty, Speeches, ThrowingKitty
 import enemysprite
@@ -24,6 +24,8 @@ import soundeffects
 
 from scene import Scene, Cutscene, DeathCutscene, WinCutscene
 import main
+
+from neutral_objects import *
 
 DEBUG = False
 soundtrack = None
@@ -42,33 +44,6 @@ def getLevel(levelNum, sound):
         # just a generic level.  no special methods
         return Level(levelNum, sound)
 
-class TriggerZone(object):
-    def __init__(self, rectTuple, level):
-        self.rect = Rect(rectTuple)
-        self.level = level
-        self.fired = False
-        self.debugSprite = TriggerZoneDebugSprite(self)
-    def fire(self, firer=None):
-        #print 'firing triggerzone'
-        self.fired = True
-    def end(self):
-        del self.level
-        del self.debugSprite
-
-    def doEnemy(self, cls, args, pos, firer):
-        enemy = cls(*args)
-        enemy.feetPos = pos
-        enemy.walkMask = self.level.walkMask
-        enemy.showAvatar(firer)
-        events.Fire('EnemyBirth', enemy)
-
-class GoalZone(TriggerZone):
-    def fire(self, firer):
-        if self.fired:
-            return
-        TriggerZone.fire(self)
-
-        events.Fire('LevelCompletedEvent', getActiveLevel())
 
 # XXX - this sucks
 
@@ -206,89 +181,6 @@ class EnemySpawnLvl4_2(TriggerZone):
         self.doEnemy(ThrowingKitty, [], (2100, 880-560), firer)
         self.end()
 
-class TriggerZoneDebugSprite(pyglet.sprite.Sprite):
-    def __init__(self, zone):
-        pat = pyglet.image.SolidColorImagePattern((255,255,0,100))
-        img = pyglet.image.create(zone.rect.width, zone.rect.height, pat)
-        self.origX = zone.rect.x
-        self.origY = zone.rect.y
-        pyglet.sprite.Sprite.__init__(self, img, self.origX, self.origY)
-
-    def update(self, timeChange=None):
-        self.x = self.origX + window.bgOffset[0]
-        self.y = self.origY + window.bgOffset[1]
-
-class PickupSprite(pyglet.sprite.Sprite):
-    def __init__(self, imgName, zone, x, y):
-        self.zone = zone
-        img = data.pngs[imgName]
-        self.origX = x - img.width/2
-        self.origY = y - img.height/2
-        pyglet.sprite.Sprite.__init__(self, img, self.origX, self.origY)
-        events.AddListener(self)
-        self.state = 'normal'
-
-    def __repr__(self):
-        return '<' + self.__class__.__name__ +\
-               (' (%s,%s) at %d>' % (self.origX, self.origY, id(self)))
-
-    def On_TriggerZoneRemove(self, zone):
-        if self.zone != zone:
-            return
-        events.RemoveListener(self)
-        self.state = 'die'
-
-    def update(self, timeChange=None):
-        self.x = self.origX + window.bgOffset[0]
-        self.y = self.origY + window.bgOffset[1]
-        if self.state == 'die':
-            self.opacity -= 5
-            self.scale += 0.1
-            if self.opacity < 50:
-                events.Fire('SpriteRemove', self)
-
-class YoyoPickupSprite(PickupSprite):
-    def __init__(self, zone, x, y):
-        PickupSprite.__init__(self, 'yoyo_pickup.png', zone, x, y)
-
-class StringPickupSprite(PickupSprite):
-    def __init__(self, zone, x, y):
-        PickupSprite.__init__(self, 'string_pickup.png', zone, x, y)
-
-
-class YoyoPickup(TriggerZone):
-    def __init__(self, rectTuple, level):
-        TriggerZone.__init__(self, rectTuple, level)
-        self.sprite = YoyoPickupSprite(self, *self.rect.center)
-    def fire(self, firer):
-        if self.fired:
-            return
-        if not isinstance(firer, Avatar):
-            return
-
-        ##print 'yoyo pickup!'
-
-        self.fired = True
-        yoyo = LogicalYoyo()
-        firer.pickupYoyo(yoyo)
-        events.Fire('TriggerZoneRemove', self)
-
-class StringPickup(TriggerZone):
-    def __init__(self, rectTuple, level):
-        TriggerZone.__init__(self, rectTuple, level)
-        self.sprite = StringPickupSprite(self, *self.rect.center)
-
-    def fire(self, firer):
-        if self.fired:
-            return
-        if not isinstance(firer, Avatar):
-            return
-        #print 'string pickup!'
-        self.fired = True
-        firer.pickupString()
-        del self.sprite
-        events.Fire('TriggerZoneRemove', self)
-
 class Heart(pyglet.sprite.Sprite):
     def __init__(self):
         imageFile = data.pngs['small-heart.png']
@@ -361,6 +253,14 @@ class EnergyMeter(object):
             self.yoImgShake = [10,10]
 
 class Level(Scene):
+    def On_AutonomousAvatarReachedGoal(self, aAvatar):
+        self.avatar = Avatar()
+        self.avSprite.avatar = self.avatar
+        self.avatar.strings = player.strings[:]
+        self.avatar.feetPos = aAvatar.feetPos
+        self.avatar.walkMask = self.walkMask
+        self.avatar.triggerZones = self.triggerZones
+
     def __init__(self, levelNum, sound=True):
         global soundtrack
         events.AddListener(self)
@@ -380,8 +280,8 @@ class Level(Scene):
         bgPngs.sort()
         self.bgImages = [data.pngs[png] for png in bgPngs]
 
-        self.avatar = Avatar()
-        self.avatar.strings = player.strings[:]
+        self.avSprite = None
+        self.avatar = AutonomousAvatar()
         self.visualEffects = visualeffects.EffectManager()
 
         self.miscSprites = []
@@ -425,6 +325,7 @@ class Level(Scene):
         events.RemoveListener(self)
         events.CleanWeakrefs()
         self.done = True
+        self.avSprite = None
         self.avatar.triggerZones = []
         self.avatar.newLevel()
         del self.enemySprites
@@ -461,8 +362,10 @@ class Level(Scene):
         clock.set_fps_limit(60)
         win = window.window
 
-        avSprite = AvatarSprite(self.avatar)
-        self.avatar.feetPos = self.startLoc
+        self.avSprite = AvatarSprite(self.avatar)
+        self.avatar.feetPos = (0, 300)
+        print 'setting goal to', self.startLoc
+        self.avatar.goal = self.startLoc
         self.avatar.walkMask = self.walkMask
         self.avatar.triggerZones = self.triggerZones
 
@@ -488,7 +391,7 @@ class Level(Scene):
                 events.Reset()
                 break
 
-            avSprite.update( timeChange )
+            self.avSprite.update( timeChange )
             for miscSprite in self.miscSprites:
                 miscSprite.update(timeChange)
             for enemySprite in self.enemySprites.values():
@@ -522,7 +425,7 @@ class Level(Scene):
 
             for miscSprite in self.miscSprites:
                 miscSprite.draw()
-            avSprite.draw()
+            self.avSprite.draw()
 
             for enemySprite in self.enemySprites.values():
                 enemySprite.draw()
@@ -587,28 +490,6 @@ class Level5(Level):
         scene.nextLevelNum = 1
         scene.sound = self.sound
         return scene
-
-def renderTriangle():
-    glPushAttrib(GL_ENABLE_BIT)
-
-    # resets the state machine to 0, 0 (the identity matrix)
-    glLoadIdentity()
-
-    # moves the state machine to 200, 200
-    glTranslatef(200, 200, 0)
-    glColor3ub(255, 0, 0)
-
-    # draws the triangle in the relative position
-    glBegin(GL_TRIANGLES)
-    glVertex3f(100.0, -100.0, 0.0)
-    glVertex3f(-100.0, -100.0, 0.0)
-    glVertex3f(0.0, 100.0, 0.0)
-    glEnd()
-
-    glColor3ub(255, 255, 255)
-    glLoadIdentity()
-
-    glPopAttrib()
 
 def queueSoundtrack(song):
     global soundtrack

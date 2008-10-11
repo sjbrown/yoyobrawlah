@@ -286,3 +286,72 @@ class LogicalYoyo(object):
     def __init__(self):
         self.stringLength = 120
         self.gfxYoyo = None
+
+
+class AutonomousAvatar(Avatar):
+    def __init__(self):
+        Avatar.__init__(self)
+        self.goal = None
+        self.xMax = 2
+        self.xMin = -2
+        self.yMax = 2
+        self.yMin = -2
+
+    def On_KeyUpPress(self): pass
+    def On_KeyRightPress(self): pass
+    def On_KeyDownPress(self): pass
+    def On_KeyLeftPress(self): pass
+    def On_KeyUpRelease(self): pass
+    def On_KeyRightRelease(self): pass
+    def On_KeyDownRelease(self): pass
+    def On_KeyLeftRelease(self): pass
+
+    def update(self, timeChange=None):
+        oldRect = self.rect.move(0,0)
+
+        xdelta = self.goal[0] - self.feetPos[0]
+        ydelta = self.goal[1] - self.feetPos[1]
+        if xdelta == 0 and ydelta ==0:
+            self.goalReached()
+            return
+
+        hPower = 0
+        vPower = 0
+
+        isXWalking = xdelta != 0
+        isYWalking = ydelta != 0
+
+        slowXApproachDistance = 10
+        slowYApproachDistance = 10
+
+        if isXWalking:
+            if xdelta > 0:
+                self.facing = Facing.right
+            else:
+                self.facing = Facing.left
+            if abs(xdelta) < slowXApproachDistance and abs(self.velocity[0]):
+                hPower = int(abs(self.velocity[0])*0.9) * -self.facing
+            else:
+                hPower = self.xAccel * self.facing
+        else:
+            hPower = -self.velocity[0]
+
+        if isYWalking:
+            if ydelta > 0:
+                self.yFacing = Facing.up
+            else:
+                self.yFacing = Facing.down
+            if abs(ydelta) < slowYApproachDistance and abs(self.velocity[1]):
+                vPower = int(abs(self.velocity[1])*0.5) * -self.yFacing
+            else:
+                vPower = self.yAccel * self.yFacing
+        else:
+            vPower = -self.velocity[1]
+
+        newRect = self.walkTo(oldRect, hPower, vPower)
+
+        self.rect = newRect
+
+    def goalReached(self):
+        events.Fire('AutonomousAvatarReachedGoal', self)
+

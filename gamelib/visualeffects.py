@@ -31,6 +31,11 @@ class EffectManager(object):
                                                        randint(-2, 3)))
             self.sprites.append(bl)
 
+    def On_AutonomousAvatarReachedGoal(self, aAvatar):
+        pos = aAvatar.rect.center
+        iSprite = InstructionSprite(pos)
+        self.sprites.append(iSprite)
+
     def On_ExplosionSpecial(self, pos):
         #print 'splode'
         pos = toScreenPos(pos)
@@ -112,6 +117,21 @@ class SpeechBubble(pyglet.sprite.Sprite):
         self.y = self.logicalY + window.bgOffset[1]
         self.text.x = self.x + self.xPadding
         self.text.y = self.y + self.yPadding
+
+class InstructionSprite(pyglet.sprite.Sprite):
+    def __init__(self, pos):
+        img = data.pngs['move_instructions.png']
+        pyglet.sprite.Sprite.__init__(self, img, 0, 0)
+        self.logicalX = pos[0] - img.width/2
+        self.logicalY = pos[1] - img.height/2
+        self.countdown = 2.0
+
+    def update(self, timeChange=None):
+        self.countdown -= timeChange
+        self.x = self.logicalX + window.bgOffset[0]
+        self.y = self.logicalY + window.bgOffset[1]
+        if self.countdown < 0:
+            events.Fire('SpriteRemove', self)
 
 class HeartFloaty(pyglet.sprite.Sprite):
     def __init__(self, pos):

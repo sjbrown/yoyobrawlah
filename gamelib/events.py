@@ -92,6 +92,7 @@ def ConsumeEventQueue():
 #------------------------------------------------------------------------------
 __validEvents += '''
 LevelStartedEvent
+AutonomousAvatarReachedGoal
 LevelCompletedEvent
 AvatarBirth
 AvatarDeath
