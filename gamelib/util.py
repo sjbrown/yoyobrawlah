@@ -27,9 +27,10 @@ class Rect(object):
 
     def _setCenter(self, *args):
         if len(args) == 1:
-            (self.x, self.y) = args[0]
+            x, y = args[0]
         else:
-            (self.x, self.y) = args
+            x, y = args
+        self.x, self.y = x - self.width/2, y - self.height/2
 
     center = property(_getCenter, _setCenter)
 
@@ -38,9 +39,11 @@ class Rect(object):
 
     def _setMidtop(self, *args):
         if len(args) == 1:
-            (self.x, self.y) = args[0]
+            x, y = args[0]
         else:
-            (self.x, self.y) = args
+            x, y = args
+        self.x = x - self.width/2
+        self.y = y
 
     midtop = property(_getMidtop, _setMidtop)
 
